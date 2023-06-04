@@ -314,6 +314,7 @@ exports.matchFileForResponse = matchFileForResponse;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getArtifactInputs = void 0;
 const getArtifactInputs = (input) => {
+    console.log(input);
     return {
         artifacts: JSON.parse(input)
     };
