@@ -388,9 +388,11 @@ const getAllArtifactValues = (artifacts) => __awaiter(void 0, void 0, void 0, fu
     const resp = [];
     let values = {};
     const variable = yield (0, github_variables_1.getGithubVariable)(SHA_LOG);
+    console.log({ variable });
     if (variable.length) {
         values = JSON.parse(variable);
     }
+    console.log({ variable, values });
     for (const _artifact of artifacts) {
         try {
             console.log(`Fetching artifact : ${_artifact.key}....`);
