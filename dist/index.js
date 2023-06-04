@@ -220,10 +220,9 @@ function run() {
          * 6. output should run
          */
         try {
-            console.log('starting action:: ', core_1.getInput);
-            const GIT_TOKEN = core_1.getInput('GIT_TOKEN');
-            const artifactsToBeFetched = core_1.getInput(ARTIFACTS);
-            client_1.github.setClient(GIT_TOKEN);
+            // const GIT_TOKEN = getInput('GIT_TOKEN')
+            // const artifactsToBeFetched = getInput(ARTIFACTS)
+            client_1.github.setClient(''); //GIT_TOKEN)
             client_1.github.setConfig({
                 repo: (_a = github_1.context.repo.repo) !== null && _a !== void 0 ? _a : '',
                 owner: (_b = github_1.context.repo.owner) !== null && _b !== void 0 ? _b : '',
@@ -231,7 +230,7 @@ function run() {
                 sha: (_d = github_1.context.sha) !== null && _d !== void 0 ? _d : ''
             });
             // Get Input from action
-            const { artifacts } = (0, take_input_1.getArtifactInputs)(artifactsToBeFetched);
+            const { artifacts } = (0, take_input_1.getArtifactInputs)('[]'); //artifactsToBeFetched)
             // Populate SHA in input
             const artifactsValueWithSha = yield (0, fetch_values_from_artifactory_1.getAllArtifactValues)(artifacts);
             // Add file diff to each Object

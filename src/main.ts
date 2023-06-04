@@ -21,11 +21,10 @@ async function run(): Promise<void> {
    */
 
   try {
-    console.log('starting action:: ', getInput)
-    const GIT_TOKEN = getInput('GIT_TOKEN')
-    const artifactsToBeFetched = getInput(ARTIFACTS)
+    // const GIT_TOKEN = getInput('GIT_TOKEN')
+    // const artifactsToBeFetched = getInput(ARTIFACTS)
 
-    github.setClient(GIT_TOKEN)
+    github.setClient('') //GIT_TOKEN)
     github.setConfig({
       repo: context.repo.repo ?? '',
       owner: context.repo.owner ?? '',
@@ -33,7 +32,7 @@ async function run(): Promise<void> {
       sha: context.sha ?? ''
     })
     // Get Input from action
-    const {artifacts} = getArtifactInputs(artifactsToBeFetched)
+    const {artifacts} = getArtifactInputs('[]') //artifactsToBeFetched)
 
     // Populate SHA in input
     const artifactsValueWithSha = await getAllArtifactValues(artifacts)
