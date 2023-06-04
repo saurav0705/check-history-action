@@ -22,12 +22,12 @@ const getAllArtifactValues = (client, artifacts) => __awaiter(void 0, void 0, vo
     const resp = [];
     for (const _artifact of artifacts) {
         try {
-            console.log(`Fetching artifact : ${_artifact}....`);
+            console.log(`Fetching artifact : ${_artifact.key}....`);
             const value = yield client.downloadArtifact(_artifact.key);
             resp.push(Object.assign(Object.assign({}, _artifact), { sha: (0, utils_1.convertFileToString)(value.downloadPath) }));
         }
         catch (e) {
-            console.error(`Error in fetching ${_artifact} :: ${e}`);
+            console.error(`Error in fetching ${_artifact.key} :: ${e}`);
             resp.push(Object.assign(Object.assign({}, _artifact), { sha: null }));
         }
     }
