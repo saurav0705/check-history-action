@@ -220,7 +220,7 @@ function run() {
          * 6. output should run
          */
         try {
-            console.log('starting action:: ', JSON.stringify(core_1.getInput, null, 2));
+            console.log('starting action:: ', core_1.getInput);
             const GIT_TOKEN = (0, core_1.getInput)('GIT_TOKEN');
             const artifactsToBeFetched = (0, core_1.getInput)(ARTIFACTS);
             client_1.github.setClient(GIT_TOKEN);

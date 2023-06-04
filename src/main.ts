@@ -21,7 +21,7 @@ async function run(): Promise<void> {
    */
 
   try {
-    console.log('starting action:: ', JSON.stringify(getInput, null, 2))
+    console.log('starting action:: ', getInput)
     const GIT_TOKEN = getInput('GIT_TOKEN')
     const artifactsToBeFetched = getInput(ARTIFACTS)
 
