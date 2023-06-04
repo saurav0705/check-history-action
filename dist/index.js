@@ -313,10 +313,22 @@ exports.matchFileForResponse = matchFileForResponse;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getArtifactInputs = void 0;
+const parser = (input) => {
+    return input
+        .trim()
+        .replace('-', '')
+        .split('\n')
+        .map(item => {
+        const [key, filesRegex] = item.split(',').map(i => i.trim());
+        return {
+            key,
+            filesRegex
+        };
+    });
+};
 const getArtifactInputs = (input) => {
-    console.log(input);
     return {
-        artifacts: JSON.parse(input)
+        artifacts: parser(input)
     };
 };
 exports.getArtifactInputs = getArtifactInputs;
