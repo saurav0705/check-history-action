@@ -193,13 +193,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __nccwpck_require__(2186);
 const github_1 = __nccwpck_require__(5438);
-const artifact_1 = __importDefault(__nccwpck_require__(2605));
+const artifact_1 = __nccwpck_require__(2605);
 const fetch_values_from_artifactory_1 = __nccwpck_require__(629);
 const get_diff_files_1 = __nccwpck_require__(3441);
 const regex_match_for_files_1 = __nccwpck_require__(1409);
@@ -230,8 +227,10 @@ function run() {
             });
             // Get Input from action
             const { artifacts } = (0, take_input_1.getArtifactInputs)(artifactsToBeFetched);
+            console.log(JSON.stringify({ artifacts }, null, 2));
+            console.log({ create: artifact_1.create });
             // Populate SHA in input
-            const artifactClient = artifact_1.default.create();
+            const artifactClient = (0, artifact_1.create)();
             const artifactsValueWithSha = yield (0, fetch_values_from_artifactory_1.getAllArtifactValues)(artifactClient, artifacts);
             // Add file diff to each Object
             const artifactValueWithShaAndFileDiff = yield (0, get_diff_files_1.getFileDiffForAllArtifacts)(artifactsValueWithSha);
