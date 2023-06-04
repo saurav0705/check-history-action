@@ -4,10 +4,12 @@ import {context} from '@actions/github'
 import {getAllArtifactValues} from './fetch-values-from-artifactory'
 import {getFileDiffForAllArtifacts} from './get-diff-files'
 import {matchFileForResponse} from './regex-match-for-files'
-import {getInputs} from './take-input'
+import {getArtifactInputs} from './take-input'
 import {postCommentOnPrWithDetails} from './post-comment-on-pr'
+
 import {github} from './github/client'
 
+const ARTIFACTS = 'artifacts'
 async function run(): Promise<void> {
   /**
    * 1. Take Input - DONE
@@ -20,6 +22,8 @@ async function run(): Promise<void> {
 
   try {
     const GIT_TOKEN = core.getInput('GIT_TOKEN')
+    const artifactsToBeFetched = core.getInput(ARTIFACTS)
+
     github.setClient(GIT_TOKEN)
     github.setConfig({
       repo: context.repo.repo ?? '',
@@ -28,7 +32,7 @@ async function run(): Promise<void> {
       sha: context.sha ?? ''
     })
     // Get Input from action
-    const {artifacts} = getInputs()
+    const {artifacts} = getArtifactInputs(artifactsToBeFetched)
 
     // Populate SHA in input
     const artifactsValueWithSha = await getAllArtifactValues(artifacts)

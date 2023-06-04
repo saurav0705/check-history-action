@@ -230,6 +230,7 @@ const regex_match_for_files_1 = __nccwpck_require__(1409);
 const take_input_1 = __nccwpck_require__(7917);
 const post_comment_on_pr_1 = __nccwpck_require__(8749);
 const client_1 = __nccwpck_require__(1495);
+const ARTIFACTS = 'artifacts';
 function run() {
     var _a, _b, _c, _d;
     return __awaiter(this, void 0, void 0, function* () {
@@ -243,6 +244,7 @@ function run() {
          */
         try {
             const GIT_TOKEN = core_1.default.getInput('GIT_TOKEN');
+            const artifactsToBeFetched = core_1.default.getInput(ARTIFACTS);
             client_1.github.setClient(GIT_TOKEN);
             client_1.github.setConfig({
                 repo: (_a = github_1.context.repo.repo) !== null && _a !== void 0 ? _a : '',
@@ -251,7 +253,7 @@ function run() {
                 sha: (_d = github_1.context.sha) !== null && _d !== void 0 ? _d : ''
             });
             // Get Input from action
-            const { artifacts } = (0, take_input_1.getInputs)();
+            const { artifacts } = (0, take_input_1.getArtifactInputs)(artifactsToBeFetched);
             // Populate SHA in input
             const artifactsValueWithSha = yield (0, fetch_values_from_artifactory_1.getAllArtifactValues)(artifacts);
             // Add file diff to each Object
@@ -335,16 +337,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getInputs = void 0;
+exports.getArtifactInputs = void 0;
 const core_1 = __importDefault(__nccwpck_require__(2186));
 const ARTIFACTS = 'artifacts';
-const getInputs = () => {
+const getArtifactInputs = (input) => {
     const artifactsToBeFetched = core_1.default.getInput(ARTIFACTS);
     return {
-        artifacts: JSON.parse(artifactsToBeFetched)
+        artifacts: JSON.parse(input)
     };
 };
-exports.getInputs = getInputs;
+exports.getArtifactInputs = getArtifactInputs;
 
 
 /***/ }),

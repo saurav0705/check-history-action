@@ -7,9 +7,11 @@ export type InputObjectType = {
   filesRegex: string
 }
 
-export const getInputs = (): {artifacts: InputObjectType[]} => {
+export const getArtifactInputs = (
+  input: string
+): {artifacts: InputObjectType[]} => {
   const artifactsToBeFetched = core.getInput(ARTIFACTS)
   return {
-    artifacts: JSON.parse(artifactsToBeFetched) as InputObjectType[]
+    artifacts: JSON.parse(input) as InputObjectType[]
   }
 }
