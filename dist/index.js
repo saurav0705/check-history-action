@@ -387,10 +387,10 @@ exports.getAllArtifactValues = getAllArtifactValues;
 const setArtifactValueVariable = (key) => __awaiter(void 0, void 0, void 0, function* () {
     const values = yield (0, github_variables_1.getGithubVariable)(SHA_LOG);
     if (!values.length) {
-        yield (0, github_variables_1.setGithubVariable)(key, { [key]: client_1.github.CONFIG.sha });
+        yield (0, github_variables_1.setGithubVariable)(SHA_LOG, { [key]: client_1.github.CONFIG.sha });
         return;
     }
-    yield (0, github_variables_1.setGithubVariable)(key, Object.assign(Object.assign({}, JSON.parse(values)), { [key]: client_1.github.CONFIG.sha }));
+    yield (0, github_variables_1.setGithubVariable)(SHA_LOG, Object.assign(Object.assign({}, JSON.parse(values)), { [key]: client_1.github.CONFIG.sha }));
 });
 exports.setArtifactValueVariable = setArtifactValueVariable;
 
