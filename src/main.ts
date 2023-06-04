@@ -1,4 +1,4 @@
-import core, {setFailed} from '@actions/core'
+import * as core from '@actions/core'
 import {context} from '@actions/github'
 
 import {getAllArtifactValues} from './fetch-values-from-artifactory'
@@ -55,7 +55,7 @@ async function run(): Promise<void> {
     core.setOutput('status', artifactValueWithShaAndFileDiffWithShouldRunStatus)
   } catch (e) {
     console.error(`Error while executing action ::  ${e}`)
-    setFailed((e as Error).message)
+    core.setFailed((e as Error).message)
   }
 }
 
