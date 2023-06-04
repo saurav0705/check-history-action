@@ -220,6 +220,7 @@ function run() {
          * 6. output should run
          */
         try {
+            console.log('starting action:: ', JSON.stringify(core_1.getInput, null, 2));
             const GIT_TOKEN = (0, core_1.getInput)('GIT_TOKEN');
             const artifactsToBeFetched = (0, core_1.getInput)(ARTIFACTS);
             client_1.github.setClient(GIT_TOKEN);
@@ -290,13 +291,13 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.matchFileForResponse = exports.matchFile = void 0;
 const matchFile = (files, pattern) => {
     const regex = new RegExp(pattern, 'i');
-    return files.some((file) => {
+    return files.some(file => {
         return regex.test(file);
     });
 };
 exports.matchFile = matchFile;
 const matchFileForResponse = (artifacts) => {
-    return artifacts.map((artifact) => (Object.assign(Object.assign({}, artifact), { shouldRun: artifact.diffFiles
+    return artifacts.map(artifact => (Object.assign(Object.assign({}, artifact), { shouldRun: artifact.diffFiles
             ? (0, exports.matchFile)(artifact.diffFiles, artifact.filesRegex)
             : true })));
 };

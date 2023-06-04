@@ -1,23 +1,23 @@
-import { ArtifactReponseTypeWithFileDiff } from './get-diff-files';
+import {ArtifactReponseTypeWithFileDiff} from './get-diff-files'
 
 export type ArtifactFinalResponseStatus = ArtifactReponseTypeWithFileDiff & {
-	shouldRun: boolean;
-};
+  shouldRun: boolean
+}
 
 export const matchFile = (files: string[], pattern: string) => {
-	const regex = new RegExp(pattern, 'i');
-	return files.some((file) => {
-		return regex.test(file);
-	});
-};
+  const regex = new RegExp(pattern, 'i')
+  return files.some(file => {
+    return regex.test(file)
+  })
+}
 
 export const matchFileForResponse = (
-	artifacts: ArtifactReponseTypeWithFileDiff[]
+  artifacts: ArtifactReponseTypeWithFileDiff[]
 ): ArtifactFinalResponseStatus[] => {
-	return artifacts.map((artifact) => ({
-		...artifact,
-		shouldRun: artifact.diffFiles
-			? matchFile(artifact.diffFiles, artifact.filesRegex)
-			: true,
-	}));
-};
+  return artifacts.map(artifact => ({
+    ...artifact,
+    shouldRun: artifact.diffFiles
+      ? matchFile(artifact.diffFiles, artifact.filesRegex)
+      : true
+  }))
+}
