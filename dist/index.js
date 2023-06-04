@@ -22,9 +22,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getAllArtifactValues = void 0;
 const artifact_1 = __importDefault(__nccwpck_require__(2605));
 const utils_1 = __nccwpck_require__(918);
-const client = artifact_1.default.create();
 const getAllArtifactValues = (artifacts) => __awaiter(void 0, void 0, void 0, function* () {
     const resp = [];
+    const client = artifact_1.default.create();
     for (const _artifact of artifacts) {
         try {
             console.log(`Fetching artifact : ${_artifact}....`);

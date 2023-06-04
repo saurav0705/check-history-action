@@ -1,7 +1,6 @@
 import artifact from '@actions/artifact'
 import {convertFileToString} from './utils'
 import {InputObjectType} from './take-input'
-const client = artifact.create()
 
 export type ArtifactResponseType = InputObjectType & {
   sha: null | string
@@ -11,6 +10,7 @@ export const getAllArtifactValues = async (
   artifacts: InputObjectType[]
 ): Promise<ArtifactResponseType[]> => {
   const resp: ArtifactResponseType[] = []
+  const client = artifact.create()
 
   for (const _artifact of artifacts) {
     try {
