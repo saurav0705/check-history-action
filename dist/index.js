@@ -135,6 +135,7 @@ const setGithubVariable = (name, value) => __awaiter(void 0, void 0, void 0, fun
         yield client_1.github.client.rest.actions.updateRepoVariable(Object.assign(Object.assign({}, client_1.github.CONFIG), { name, value: JSON.stringify(value) }));
     }
     catch (e) {
+        console.log(e);
         console.error(`Error While Setting ${name} with  value ${JSON.stringify(value)}`);
     }
 });
@@ -146,6 +147,7 @@ const getGithubVariable = (name) => __awaiter(void 0, void 0, void 0, function* 
         return data.data.value;
     }
     catch (e) {
+        console.log(e);
         console.error(`Error While Getting ${name}`);
         return '';
     }
