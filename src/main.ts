@@ -1,9 +1,12 @@
 import core, {setFailed} from '@actions/core'
+import {context} from '@actions/github'
+
 import {getAllArtifactValues} from './fetch-values-from-artifactory'
 import {getFileDiffForAllArtifacts} from './get-diff-files'
 import {matchFileForResponse} from './regex-match-for-files'
 import {getInputs} from './take-input'
 import {postCommentOnPrWithDetails} from './post-comment-on-pr'
+import {github} from './github/client'
 
 async function run(): Promise<void> {
   /**
@@ -16,6 +19,14 @@ async function run(): Promise<void> {
    */
 
   try {
+    const GIT_TOKEN = core.getInput('GIT_TOKEN')
+    github.setClient(GIT_TOKEN)
+    github.setConfig({
+      repo: context.repo.repo ?? '',
+      owner: context.repo.owner ?? '',
+      issue_number: context.payload.number ?? 0,
+      sha: context.sha ?? ''
+    })
     // Get Input from action
     const {artifacts} = getInputs()
 

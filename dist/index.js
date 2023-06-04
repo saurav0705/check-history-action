@@ -77,7 +77,7 @@ const getFileDiffForAllArtifacts = (artifacts) => __awaiter(void 0, void 0, void
     for (const artifact of artifacts) {
         try {
             if (artifact.sha) {
-                const diffFiles = yield (0, exports.getDiffFiles)(artifact.sha, client_1.GITHUB_CONFIG.sha);
+                const diffFiles = yield (0, exports.getDiffFiles)(artifact.sha, client_1.github.CONFIG.sha);
                 resp.push(Object.assign(Object.assign({}, artifact), { diffFiles }));
             }
             else {
@@ -97,27 +97,31 @@ exports.getFileDiffForAllArtifacts = getFileDiffForAllArtifacts;
 /***/ }),
 
 /***/ 1495:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-var _a, _b, _c, _d;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.GITHUB_CONFIG = exports.github = void 0;
+exports.github = void 0;
 const octokit_1 = __nccwpck_require__(7467);
-const github_1 = __nccwpck_require__(5438);
-const core_1 = __importDefault(__nccwpck_require__(2186));
-const GIT_TOKEN = core_1.default.getInput('GIT_TOKEN');
-exports.github = new octokit_1.Octokit({ auth: GIT_TOKEN });
-exports.GITHUB_CONFIG = {
-    repo: (_a = github_1.context.repo.repo) !== null && _a !== void 0 ? _a : '',
-    owner: (_b = github_1.context.repo.owner) !== null && _b !== void 0 ? _b : '',
-    issue_number: (_c = github_1.context.payload.number) !== null && _c !== void 0 ? _c : 0,
-    sha: (_d = github_1.context.sha) !== null && _d !== void 0 ? _d : ''
-};
+class GithubClient {
+    constructor() {
+        this.CONFIG = {
+            repo: '',
+            owner: '',
+            issue_number: 0,
+            sha: ''
+        };
+        this.client = new octokit_1.Octokit({ auth: '' });
+    }
+    setConfig(config) {
+        this.CONFIG = config;
+    }
+    setClient(token) {
+        this.client = new octokit_1.Octokit({ auth: token });
+    }
+}
+exports.github = new GithubClient();
 
 
 /***/ }),
@@ -139,11 +143,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getFileDiffFromGithub = void 0;
 const client_1 = __nccwpck_require__(1495);
-const getFileDiffFromGithub = ({ base, head, }) => __awaiter(void 0, void 0, void 0, function* () {
+const getFileDiffFromGithub = ({ base, head }) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
-    const resp = yield client_1.github.rest.repos.compareCommits(Object.assign({ base,
-        head }, client_1.GITHUB_CONFIG));
-    return (_b = (_a = resp.data.files) === null || _a === void 0 ? void 0 : _a.map((item) => item.filename)) !== null && _b !== void 0 ? _b : [];
+    const resp = yield client_1.github.client.rest.repos.compareCommits(Object.assign({ base,
+        head }, client_1.github.CONFIG));
+    return (_b = (_a = resp.data.files) === null || _a === void 0 ? void 0 : _a.map(item => item.filename)) !== null && _b !== void 0 ? _b : [];
 });
 exports.getFileDiffFromGithub = getFileDiffFromGithub;
 
@@ -169,7 +173,7 @@ exports.postCommentOnPR = void 0;
 const client_1 = __nccwpck_require__(1495);
 const postCommentOnPR = (body) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield client_1.github.rest.issues.createComment(Object.assign(Object.assign({}, client_1.GITHUB_CONFIG), { body }));
+        yield client_1.github.client.rest.issues.createComment(Object.assign(Object.assign({}, client_1.github.CONFIG), { body }));
     }
     catch (e) {
         console.error(`Error while posting comment on PR : ${e}`);
@@ -219,12 +223,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core_1 = __importStar(__nccwpck_require__(2186));
+const github_1 = __nccwpck_require__(5438);
 const fetch_values_from_artifactory_1 = __nccwpck_require__(629);
 const get_diff_files_1 = __nccwpck_require__(3441);
 const regex_match_for_files_1 = __nccwpck_require__(1409);
 const take_input_1 = __nccwpck_require__(7917);
 const post_comment_on_pr_1 = __nccwpck_require__(8749);
+const client_1 = __nccwpck_require__(1495);
 function run() {
+    var _a, _b, _c, _d;
     return __awaiter(this, void 0, void 0, function* () {
         /**
          * 1. Take Input - DONE
@@ -235,6 +242,14 @@ function run() {
          * 6. output should run
          */
         try {
+            const GIT_TOKEN = core_1.default.getInput('GIT_TOKEN');
+            client_1.github.setClient(GIT_TOKEN);
+            client_1.github.setConfig({
+                repo: (_a = github_1.context.repo.repo) !== null && _a !== void 0 ? _a : '',
+                owner: (_b = github_1.context.repo.owner) !== null && _b !== void 0 ? _b : '',
+                issue_number: (_c = github_1.context.payload.number) !== null && _c !== void 0 ? _c : 0,
+                sha: (_d = github_1.context.sha) !== null && _d !== void 0 ? _d : ''
+            });
             // Get Input from action
             const { artifacts } = (0, take_input_1.getInputs)();
             // Populate SHA in input

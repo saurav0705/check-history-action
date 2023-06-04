@@ -1,5 +1,5 @@
 import {ArtifactResponseType} from './fetch-values-from-artifactory'
-import {GITHUB_CONFIG} from './github/client'
+import {github} from './github/client'
 import {getFileDiffFromGithub} from './github/get-diff-from-commit'
 
 const hash: Record<string, string[]> = {}
@@ -28,7 +28,7 @@ export const getFileDiffForAllArtifacts = async (
   for (const artifact of artifacts) {
     try {
       if (artifact.sha) {
-        const diffFiles = await getDiffFiles(artifact.sha, GITHUB_CONFIG.sha)
+        const diffFiles = await getDiffFiles(artifact.sha, github.CONFIG.sha)
         resp.push({...artifact, diffFiles})
       } else {
         resp.push({...artifact, diffFiles: null})

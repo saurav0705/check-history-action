@@ -1,9 +1,9 @@
-import { GITHUB_CONFIG, github } from './client';
+import {github} from './client'
 
-export const postCommentOnPR = async (body: string) => {
-	try {
-		await github.rest.issues.createComment({ ...GITHUB_CONFIG, body });
-	} catch (e) {
-		console.error(`Error while posting comment on PR : ${e}`);
-	}
-};
+export const postCommentOnPR = async (body: string): Promise<void> => {
+  try {
+    await github.client.rest.issues.createComment({...github.CONFIG, body})
+  } catch (e) {
+    console.error(`Error while posting comment on PR : ${e}`)
+  }
+}

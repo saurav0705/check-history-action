@@ -1,19 +1,19 @@
-import { GITHUB_CONFIG, github } from './client';
+import {github} from './client'
 
 type DiffFilesType = {
-	base: string;
-	head: string;
-};
+  base: string
+  head: string
+}
 
 export const getFileDiffFromGithub = async ({
-	base,
-	head,
+  base,
+  head
 }: DiffFilesType): Promise<string[]> => {
-	const resp = await github.rest.repos.compareCommits({
-		base,
-		head,
-		...GITHUB_CONFIG,
-	});
+  const resp = await github.client.rest.repos.compareCommits({
+    base,
+    head,
+    ...github.CONFIG
+  })
 
-	return resp.data.files?.map((item) => item.filename) ?? [];
-};
+  return resp.data.files?.map(item => item.filename) ?? []
+}

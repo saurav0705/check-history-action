@@ -1,14 +1,28 @@
 import {Octokit} from 'octokit'
-import {context} from '@actions/github'
-import core from '@actions/core'
 
-const GIT_TOKEN = core.getInput('GIT_TOKEN')
-
-export const github = new Octokit({auth: GIT_TOKEN})
-
-export const GITHUB_CONFIG = {
-  repo: context.repo.repo ?? '',
-  owner: context.repo.owner ?? '',
-  issue_number: context.payload.number ?? 0,
-  sha: context.sha ?? ''
+type GithubConfigType = {
+  repo: string
+  owner: string
+  issue_number: number
+  sha: string
 }
+
+class GithubClient {
+  CONFIG: GithubConfigType = {
+    repo: '',
+    owner: '',
+    issue_number: 0,
+    sha: ''
+  }
+  client = new Octokit({auth: ''})
+
+  setConfig(config: GithubConfigType): void {
+    this.CONFIG = config
+  }
+
+  setClient(token: string): void {
+    this.client = new Octokit({auth: token})
+  }
+}
+
+export const github = new GithubClient()
