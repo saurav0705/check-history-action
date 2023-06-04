@@ -4,7 +4,7 @@ export type ArtifactFinalResponseStatus = ArtifactReponseTypeWithFileDiff & {
   shouldRun: boolean
 }
 
-export const matchFile = (files: string[], pattern: string) => {
+export const matchFile = (files: string[], pattern: string): boolean => {
   const regex = new RegExp(pattern, 'i')
   return files.some(file => {
     return regex.test(file)
