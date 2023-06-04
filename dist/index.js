@@ -221,8 +221,8 @@ function run() {
          */
         try {
             console.log('starting action:: ', core_1.getInput);
-            const GIT_TOKEN = (0, core_1.getInput)('GIT_TOKEN');
-            const artifactsToBeFetched = (0, core_1.getInput)(ARTIFACTS);
+            const GIT_TOKEN = core_1.getInput('GIT_TOKEN');
+            const artifactsToBeFetched = core_1.getInput(ARTIFACTS);
             client_1.github.setClient(GIT_TOKEN);
             client_1.github.setConfig({
                 repo: (_a = github_1.context.repo.repo) !== null && _a !== void 0 ? _a : '',
