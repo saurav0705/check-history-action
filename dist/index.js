@@ -220,9 +220,9 @@ function run() {
          * 6. output should run
          */
         try {
-            // const GIT_TOKEN = getInput('GIT_TOKEN')
-            // const artifactsToBeFetched = getInput(ARTIFACTS)
-            client_1.github.setClient(''); //GIT_TOKEN)
+            const GIT_TOKEN = (0, core_1.getInput)('GIT_TOKEN');
+            const artifactsToBeFetched = (0, core_1.getInput)(ARTIFACTS);
+            client_1.github.setClient(GIT_TOKEN);
             client_1.github.setConfig({
                 repo: (_a = github_1.context.repo.repo) !== null && _a !== void 0 ? _a : '',
                 owner: (_b = github_1.context.repo.owner) !== null && _b !== void 0 ? _b : '',
@@ -230,7 +230,7 @@ function run() {
                 sha: (_d = github_1.context.sha) !== null && _d !== void 0 ? _d : ''
             });
             // Get Input from action
-            const { artifacts } = (0, take_input_1.getArtifactInputs)('[]'); //artifactsToBeFetched)
+            const { artifacts } = (0, take_input_1.getArtifactInputs)(artifactsToBeFetched);
             // Populate SHA in input
             const artifactsValueWithSha = yield (0, fetch_values_from_artifactory_1.getAllArtifactValues)(artifacts);
             // Add file diff to each Object
@@ -243,6 +243,7 @@ function run() {
             (0, core_1.setOutput)('status', artifactValueWithShaAndFileDiffWithShouldRunStatus);
         }
         catch (e) {
+            console.log(e);
             console.error(`Error while executing action ::  ${e}`);
             (0, core_1.setFailed)(e.message);
         }
@@ -306,19 +307,13 @@ exports.matchFileForResponse = matchFileForResponse;
 /***/ }),
 
 /***/ 7917:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+/***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getArtifactInputs = void 0;
-const core_1 = __importDefault(__nccwpck_require__(2186));
-const ARTIFACTS = 'artifacts';
 const getArtifactInputs = (input) => {
-    const artifactsToBeFetched = core_1.default.getInput(ARTIFACTS);
     return {
         artifacts: JSON.parse(input)
     };
