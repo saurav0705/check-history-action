@@ -225,11 +225,6 @@ function run() {
         try {
             const GIT_TOKEN = (0, core_1.getInput)('GIT_TOKEN');
             const UPLOAD_KEY = (0, core_1.getInput)('UPLOAD_KEY');
-            if (UPLOAD_KEY) {
-                (0, values_from_variables_1.setArtifactValueVariable)(UPLOAD_KEY);
-                return;
-            }
-            const artifactsToBeFetched = (0, core_1.getInput)(ARTIFACTS);
             client_1.github.setClient(GIT_TOKEN);
             client_1.github.setConfig({
                 repo: (_a = github_1.context.repo.repo) !== null && _a !== void 0 ? _a : '',
@@ -237,6 +232,11 @@ function run() {
                 issue_number: (_c = github_1.context.payload.number) !== null && _c !== void 0 ? _c : 0,
                 sha: (_d = github_1.context.sha) !== null && _d !== void 0 ? _d : ''
             });
+            if (UPLOAD_KEY) {
+                (0, values_from_variables_1.setArtifactValueVariable)(UPLOAD_KEY);
+                return;
+            }
+            const artifactsToBeFetched = (0, core_1.getInput)(ARTIFACTS);
             // Get Input from action
             const { artifacts } = (0, take_input_1.getArtifactInputs)(artifactsToBeFetched);
             // Populate SHA in input
