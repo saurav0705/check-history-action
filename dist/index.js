@@ -362,12 +362,17 @@ const github_variables_1 = __nccwpck_require__(2146);
 const client_1 = __nccwpck_require__(1495);
 const SHA_LOG = 'sha_log';
 const getAllArtifactValues = (artifacts) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const resp = [];
-    const values = JSON.parse(yield (0, github_variables_1.getGithubVariable)(SHA_LOG));
+    let values = {};
+    const variable = yield (0, github_variables_1.getGithubVariable)(SHA_LOG);
+    if (variable.length) {
+        values = JSON.parse(variable);
+    }
     for (const _artifact of artifacts) {
         try {
             console.log(`Fetching artifact : ${_artifact.key}....`);
-            resp.push(Object.assign(Object.assign({}, _artifact), { sha: values[_artifact.key] }));
+            resp.push(Object.assign(Object.assign({}, _artifact), { sha: (_a = values[_artifact.key]) !== null && _a !== void 0 ? _a : null }));
         }
         catch (e) {
             console.error(`Error in fetching ${_artifact.key} :: ${e}`);
