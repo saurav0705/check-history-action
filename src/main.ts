@@ -1,7 +1,10 @@
 import {getInput, setOutput, setFailed} from '@actions/core'
 import {context} from '@actions/github'
 
-import {getAllArtifactValues} from './fetch-values-from-artifactory'
+import {
+  getAllArtifactValues,
+  setArtifactValueVariable
+} from './values-from-variables'
 import {getFileDiffForAllArtifacts} from './get-diff-files'
 import {matchFileForResponse} from './regex-match-for-files'
 import {getArtifactInputs} from './take-input'
@@ -22,7 +25,7 @@ async function run(): Promise<void> {
 
   try {
     const GIT_TOKEN = getInput('GIT_TOKEN')
-    const artifactsToBeFetched = getInput(ARTIFACTS)
+    const UPLOAD_KEY = getInput('UPLOAD_KEY')
 
     github.setClient(GIT_TOKEN)
     github.setConfig({
@@ -31,9 +34,15 @@ async function run(): Promise<void> {
       issue_number: context.payload.number ?? 0,
       sha: context.sha ?? ''
     })
+
+    if (UPLOAD_KEY) {
+      setArtifactValueVariable(UPLOAD_KEY)
+      return
+    }
+
+    const artifactsToBeFetched = getInput(ARTIFACTS)
     // Get Input from action
     const {artifacts} = getArtifactInputs(artifactsToBeFetched)
-
     // Populate SHA in input
     const artifactsValueWithSha = await getAllArtifactValues(artifacts)
 

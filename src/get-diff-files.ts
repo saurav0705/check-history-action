@@ -1,4 +1,4 @@
-import {ArtifactResponseType} from './fetch-values-from-artifactory'
+import {ArtifactResponseType} from './values-from-variables'
 import {github} from './github/client'
 import {getFileDiffFromGithub} from './github/get-diff-from-commit'
 

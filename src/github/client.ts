@@ -14,6 +14,7 @@ class GithubClient {
     issue_number: 0,
     sha: ''
   }
+  private token = ''
   client = new Octokit({auth: ''})
 
   setConfig(config: GithubConfigType): void {
@@ -22,6 +23,11 @@ class GithubClient {
 
   setClient(token: string): void {
     this.client = new Octokit({auth: token})
+    this.token = token
+  }
+
+  getToken(): string {
+    return this.token
   }
 }
 

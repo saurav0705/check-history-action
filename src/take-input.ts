@@ -3,11 +3,23 @@ export type InputObjectType = {
   filesRegex: string
 }
 
+const parser = (input: string): InputObjectType[] => {
+  return input
+    .trim()
+    .split('\n')
+    .map(item => {
+      const [key, filesRegex] = item.split(',').map(i => i.trim())
+      return {
+        key,
+        filesRegex
+      }
+    })
+}
+
 export const getArtifactInputs = (
   input: string
 ): {artifacts: InputObjectType[]} => {
-  console.log(input)
   return {
-    artifacts: JSON.parse(input) as InputObjectType[]
+    artifacts: parser(input)
   }
 }
