@@ -1,4 +1,4 @@
-import * as core from '@actions/core'
+import {getInput, setOutput, setFailed} from '@actions/core'
 import {context} from '@actions/github'
 
 import {getAllArtifactValues} from './fetch-values-from-artifactory'
@@ -21,8 +21,8 @@ async function run(): Promise<void> {
    */
 
   try {
-    const GIT_TOKEN = core.getInput('GIT_TOKEN')
-    const artifactsToBeFetched = core.getInput(ARTIFACTS)
+    const GIT_TOKEN = getInput('GIT_TOKEN')
+    const artifactsToBeFetched = getInput(ARTIFACTS)
 
     github.setClient(GIT_TOKEN)
     github.setConfig({
@@ -52,10 +52,10 @@ async function run(): Promise<void> {
     )
 
     // set output
-    core.setOutput('status', artifactValueWithShaAndFileDiffWithShouldRunStatus)
+    setOutput('status', artifactValueWithShaAndFileDiffWithShouldRunStatus)
   } catch (e) {
     console.error(`Error while executing action ::  ${e}`)
-    core.setFailed((e as Error).message)
+    setFailed((e as Error).message)
   }
 }
 

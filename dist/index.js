@@ -189,29 +189,6 @@ exports.postCommentOnPR = postCommentOnPR;
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -222,7 +199,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core = __importStar(__nccwpck_require__(2186));
+const core_1 = __nccwpck_require__(2186);
 const github_1 = __nccwpck_require__(5438);
 const fetch_values_from_artifactory_1 = __nccwpck_require__(629);
 const get_diff_files_1 = __nccwpck_require__(3441);
@@ -243,8 +220,8 @@ function run() {
          * 6. output should run
          */
         try {
-            const GIT_TOKEN = core.getInput('GIT_TOKEN');
-            const artifactsToBeFetched = core.getInput(ARTIFACTS);
+            const GIT_TOKEN = (0, core_1.getInput)('GIT_TOKEN');
+            const artifactsToBeFetched = (0, core_1.getInput)(ARTIFACTS);
             client_1.github.setClient(GIT_TOKEN);
             client_1.github.setConfig({
                 repo: (_a = github_1.context.repo.repo) !== null && _a !== void 0 ? _a : '',
@@ -263,11 +240,11 @@ function run() {
             // post a message summary of action
             yield (0, post_comment_on_pr_1.postCommentOnPrWithDetails)(artifactValueWithShaAndFileDiffWithShouldRunStatus);
             // set output
-            core.setOutput('status', artifactValueWithShaAndFileDiffWithShouldRunStatus);
+            (0, core_1.setOutput)('status', artifactValueWithShaAndFileDiffWithShouldRunStatus);
         }
         catch (e) {
             console.error(`Error while executing action ::  ${e}`);
-            core.setFailed(e.message);
+            (0, core_1.setFailed)(e.message);
         }
     });
 }
