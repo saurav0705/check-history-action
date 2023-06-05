@@ -108,8 +108,10 @@ exports.getFileDiffFromGithub = void 0;
 const client_1 = __nccwpck_require__(1495);
 const getFileDiffFromGithub = ({ base, head }) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
+    console.log(`fetching file diff for ${base} ${head}`);
     const resp = yield client_1.github.client.rest.repos.compareCommits(Object.assign({ base,
         head }, client_1.github.CONFIG));
+    console.log(resp);
     return (_b = (_a = resp.data.files) === null || _a === void 0 ? void 0 : _a.map(item => item.filename)) !== null && _b !== void 0 ? _b : [];
 });
 exports.getFileDiffFromGithub = getFileDiffFromGithub;
