@@ -133,25 +133,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getGithubVariable = exports.setGithubVariable = void 0;
-// import axios from 'axios'
 const client_1 = __nccwpck_require__(1495);
 const setGithubVariable = (name, value) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log(`Setting Variable with ${name} with value ${JSON.stringify(value)}`);
-        // await axios.patch(
-        //   `https://api.github.com/repos/${github.CONFIG.owner}/${github.CONFIG.repo}/actions/variables/${name}`,
-        //   {
-        //     name,
-        //     value: JSON.stringify(value)
-        //   },
-        //   {
-        //     headers: {
-        //       Accept: 'application/vnd.github+json',
-        //       Authorization: `Bearer ${github.getToken()}`,
-        //       'X-GitHub-Api-Version': '2022-11-28'
-        //     }
-        //   }
-        // )
         yield client_1.github.client.rest.actions.updateRepoVariable(Object.assign(Object.assign({}, client_1.github.CONFIG), { name, value: JSON.stringify(value) }));
     }
     catch (e) {
@@ -263,6 +248,7 @@ function run() {
             const artifactsValueWithSha = yield (0, values_from_variables_1.getAllArtifactValues)(artifacts);
             // Add file diff to each Object
             const artifactValueWithShaAndFileDiff = yield (0, get_diff_files_1.getFileDiffForAllArtifacts)(artifactsValueWithSha);
+            console.log({ artifactValueWithShaAndFileDiff });
             // Complete Response for action
             const artifactValueWithShaAndFileDiffWithShouldRunStatus = (0, regex_match_for_files_1.matchFileForResponse)(artifactValueWithShaAndFileDiff);
             // post a message summary of action
@@ -344,7 +330,6 @@ exports.getArtifactInputs = void 0;
 const parser = (input) => {
     return input
         .trim()
-        .replace('-', '')
         .split('\n')
         .map(item => {
         const [key, filesRegex] = item.split(',').map(i => i.trim());
@@ -388,11 +373,9 @@ const getAllArtifactValues = (artifacts) => __awaiter(void 0, void 0, void 0, fu
     const resp = [];
     let values = {};
     const variable = yield (0, github_variables_1.getGithubVariable)(SHA_LOG);
-    console.log({ variable });
     if (variable.length) {
         values = JSON.parse(variable);
     }
-    console.log({ variable, values });
     for (const _artifact of artifacts) {
         try {
             console.log(`Fetching artifact : ${_artifact.key}....`);
