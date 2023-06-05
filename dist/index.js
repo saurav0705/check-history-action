@@ -289,7 +289,7 @@ const post_comment_on_pr_1 = __nccwpck_require__(1529);
 const postCommentOnPrWithDetails = (artifacts) => __awaiter(void 0, void 0, void 0, function* () {
     const body = artifacts.reduce((prev, artifact) => {
         var _a;
-        return `${prev} \n ${artifact.key} | ${artifact.filesRegex} | ${artifact.sha} | ${(_a = artifact.diffFiles) === null || _a === void 0 ? void 0 : _a.join(',')} | ${artifact.shouldRun}`;
+        return `${prev} \n ${artifact.key} | ${artifact.filesRegex} | ${artifact.sha} | ${(_a = artifact.diffFiles) === null || _a === void 0 ? void 0 : _a.join(', ')} | ${artifact.shouldRun}`;
     }, 'artifact | regex | sha | diffFiles | shouldRun\n --------- | --------- |--------- |--------- |--------- ');
     yield (0, post_comment_on_pr_1.postCommentOnPR)(body);
 });
@@ -311,7 +311,7 @@ exports.matchFileForResponse = exports.matchFile = void 0;
 const picomatch_1 = __importDefault(__nccwpck_require__(8569));
 const matchFile = (files, pattern) => {
     const isMatch = (0, picomatch_1.default)(pattern);
-    return files.some(file => {
+    return !!files.filter(file => {
         return isMatch(file);
     });
 };
