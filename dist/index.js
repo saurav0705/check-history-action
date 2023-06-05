@@ -290,7 +290,7 @@ const postCommentOnPrWithDetails = (artifacts) => __awaiter(void 0, void 0, void
     const body = artifacts.reduce((prev, artifact) => {
         var _a;
         return `${prev} \n ${artifact.key} | ${artifact.filesRegex} | ${artifact.sha} | ${(_a = artifact.diffFiles) === null || _a === void 0 ? void 0 : _a.join(',')} | ${artifact.shouldRun}`;
-    }, 'artifact | regex | sha | diffFiles | shouldRun');
+    }, 'artifact | regex | sha | diffFiles | shouldRun\n --------- | --------- |--------- |--------- |--------- ');
     yield (0, post_comment_on_pr_1.postCommentOnPR)(body);
 });
 exports.postCommentOnPrWithDetails = postCommentOnPrWithDetails;
