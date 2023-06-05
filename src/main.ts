@@ -61,7 +61,13 @@ async function run(): Promise<void> {
     )
 
     // set output
-    setOutput('status', artifactValueWithShaAndFileDiffWithShouldRunStatus)
+    setOutput(
+      'status',
+      artifactValueWithShaAndFileDiffWithShouldRunStatus.reduce(
+        (prev, item) => ({...prev, [item.key]: item}),
+        {}
+      )
+    )
   } catch (e) {
     console.log(e)
     console.error(`Error while executing action ::  ${e}`)

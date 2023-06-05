@@ -251,11 +251,10 @@ function run() {
             const artifactValueWithShaAndFileDiff = yield (0, get_diff_files_1.getFileDiffForAllArtifacts)(artifactsValueWithSha);
             // Complete Response for action
             const artifactValueWithShaAndFileDiffWithShouldRunStatus = (0, regex_match_for_files_1.matchFileForResponse)(artifactValueWithShaAndFileDiff);
-            console.log({ artifactValueWithShaAndFileDiffWithShouldRunStatus });
             // post a message summary of action
             yield (0, post_comment_on_pr_1.postCommentOnPrWithDetails)(artifactValueWithShaAndFileDiffWithShouldRunStatus);
             // set output
-            (0, core_1.setOutput)('status', artifactValueWithShaAndFileDiffWithShouldRunStatus);
+            (0, core_1.setOutput)('status', artifactValueWithShaAndFileDiffWithShouldRunStatus.reduce((prev, item) => (Object.assign(Object.assign({}, prev), { [item.key]: item })), {}));
         }
         catch (e) {
             console.log(e);
