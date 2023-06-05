@@ -111,7 +111,7 @@ const getFileDiffFromGithub = ({ base, head }) => __awaiter(void 0, void 0, void
     console.log(`fetching file diff for ${base} ${head}`);
     const resp = yield client_1.github.client.rest.repos.compareCommits(Object.assign({ base,
         head }, client_1.github.CONFIG));
-    console.log(resp);
+    console.log(JSON.stringify(resp.data, null, 2));
     return (_b = (_a = resp.data.files) === null || _a === void 0 ? void 0 : _a.map(item => item.filename)) !== null && _b !== void 0 ? _b : [];
 });
 exports.getFileDiffFromGithub = getFileDiffFromGithub;
