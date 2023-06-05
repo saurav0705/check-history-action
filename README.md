@@ -23,8 +23,8 @@ Ensure that you have these dependencies installed or included in your workflow e
         with:
           GIT_TOKEN: ${{secrets.GIT_SECRET}}
           KEYS: |
-            JOB_NAME_1-${{github.event.number}} , android/**
-            JOB_NAME_1-${{github.event.number}}, ios/**
+            JOB_NAME_1 , android/**
+            JOB_NAME_1, ios/**
 
 # This will be consumed by the job
       - name: Check Changed File
@@ -33,7 +33,7 @@ Ensure that you have these dependencies installed or included in your workflow e
         with:
           GIT_TOKEN: ${{secrets.GIT_SECRET}}
           # if UPLOAD_KEYS is present KEYS will be ignored
-          UPLOAD_KEY: JOB_NAME_1-${{github.event.number}}
+          UPLOAD_KEY: JOB_NAME_1
 ```
 
 ### `GIT_TOKEN` (required)
@@ -53,9 +53,10 @@ This Return a `status` object in which the following are present
 ```json
 {
   "status" : {
-    "job_1-{pr-number}" : {
+    "job_1" : {
       "shouldRun" : true, // boolean
       "key" : "job_1-{pr-number}", // string
+      "suppliedKey" : "job_1", // string
       "filesRegex" : "regex", // string
       "sha":"some-sha", // string
       "diffFiles" : [ "file-1","file-2" ] // Array<string>
@@ -68,7 +69,7 @@ This Return a `status` object in which the following are present
 It's a boolean which tell if these 2 commits have pattern matching file change.
 
 ### `key`
-It's a string which is the job key for which this is fetched.
+It's a string which is the job key for which this is fetched appended with pr number.
 
 ### `filesRegex`
 It's a string which is the regex for file path match.
@@ -94,7 +95,7 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-      status : ${{jobs.changed-files.outputs.status}} 
+      JOB_NAME : ${{steps.changed-files.outputs.JOB_NAME}} 
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -110,7 +111,7 @@ jobs:
       with:
           GIT_TOKEN: ${{secrets.GIT_SECRET}}
           KEYS: |
-            JOB_NAME-${{github.event.number}} , src/**
+            JOB_NAME, src/**
 
     - name: Print status
       run: echo "Action status: ${{ steps.regex_commenter.outputs.status }}"
@@ -118,7 +119,7 @@ jobs:
   child_job:
     runs-on: ubuntu-latest
     needs : [setup]
-    if: ${{ fromJSON(needs.setup.outputs.status[JOB_NAME-github.event.number].shouldRun) == 'true' }}
+    if: ${{ fromJSON(needs.setup.outputs.JOB_NAME.shouldRun) == 'true' }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -135,7 +136,7 @@ jobs:
       uses: saurav0705/check-history-action@v1
       with:
           GIT_TOKEN: ${{secrets.GIT_SECRET}}
-          UPLOAD_KEY: JOB_NAME-${{github.event.number}}
+          UPLOAD_KEY: JOB_NAME
 
 ```
 

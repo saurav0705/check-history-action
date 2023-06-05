@@ -27,7 +27,7 @@ async function run(): Promise<void> {
     })
 
     if (UPLOAD_KEY) {
-      setArtifactValueVariable(UPLOAD_KEY)
+      setArtifactValueVariable(`${UPLOAD_KEY}-${github.CONFIG.issue_number}`)
       return
     }
 
@@ -52,13 +52,9 @@ async function run(): Promise<void> {
     )
 
     // set output
-    setOutput(
-      'status',
-      artifactValueWithShaAndFileDiffWithShouldRunStatus.reduce(
-        (prev, item) => ({...prev, [item.key]: item}),
-        {}
-      )
-    )
+    for (const resp of artifactValueWithShaAndFileDiffWithShouldRunStatus) {
+      setOutput(resp.suppliedKey, resp)
+    }
   } catch (e) {
     console.log(e)
     console.error(`Error while executing action ::  ${e}`)
