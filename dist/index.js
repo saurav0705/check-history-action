@@ -288,7 +288,8 @@ exports.postCommentOnPrWithDetails = void 0;
 const post_comment_on_pr_1 = __nccwpck_require__(1529);
 const postCommentOnPrWithDetails = (artifacts) => __awaiter(void 0, void 0, void 0, function* () {
     const body = artifacts.reduce((prev, artifact) => {
-        return `${prev} \n ${artifact.key} | ${artifact.filesRegex} | ${artifact.sha} | ${artifact.diffFiles} | ${artifact.shouldRun}`;
+        var _a;
+        return `${prev} \n ${artifact.key} | ${artifact.filesRegex} | ${artifact.sha} | ${(_a = artifact.diffFiles) === null || _a === void 0 ? void 0 : _a.join(',')} | ${artifact.shouldRun}`;
     }, 'artifact | regex | sha | diffFiles | shouldRun');
     yield (0, post_comment_on_pr_1.postCommentOnPR)(body);
 });
