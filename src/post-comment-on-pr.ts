@@ -5,7 +5,9 @@ export const postCommentOnPrWithDetails = async (
   artifacts: ArtifactFinalResponseStatus[]
 ): Promise<void> => {
   const body = artifacts.reduce((prev, artifact) => {
-    return `${prev} \n ${artifact.key} | ${artifact.filesRegex} | ${artifact.sha} | ${artifact.diffFiles} | ${artifact.shouldRun}`
-  }, 'artifact | regex | sha | diffFiles | shouldRun')
+    return `${prev} \n ${artifact.key} | ${artifact.filesRegex} | ${
+      artifact.sha
+    } | ${artifact.diffFiles?.join(',<br/>')} | ${artifact.shouldRun}`
+  }, 'Artifact | Pattern | SHA | Changed Files | Status\n --------- | --------- |--------- |--------- |--------- ')
   await postCommentOnPR(body)
 }

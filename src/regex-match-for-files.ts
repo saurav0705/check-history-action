@@ -1,14 +1,19 @@
 import {ArtifactReponseTypeWithFileDiff} from './get-diff-files'
 
+import picomatch from 'picomatch'
+
 export type ArtifactFinalResponseStatus = ArtifactReponseTypeWithFileDiff & {
   shouldRun: boolean
 }
 
 export const matchFile = (files: string[], pattern: string): boolean => {
-  const regex = new RegExp(pattern, 'i')
-  return files.some(file => {
-    return regex.test(file)
-  })
+  const isMatch = picomatch(pattern)
+  for (const file of files) {
+    if (isMatch(file)) {
+      return true
+    }
+  }
+  return false
 }
 
 export const matchFileForResponse = (
