@@ -311,9 +311,15 @@ exports.matchFileForResponse = exports.matchFile = void 0;
 const picomatch_1 = __importDefault(__nccwpck_require__(8569));
 const matchFile = (files, pattern) => {
     const isMatch = (0, picomatch_1.default)(pattern);
-    return !!files.filter(file => {
-        return isMatch(file);
-    });
+    for (const file of files) {
+        if (isMatch(file)) {
+            return true;
+        }
+    }
+    return false;
+    // return !!files.filter(file => {
+    //   return isMatch(file)
+    // })
 };
 exports.matchFile = matchFile;
 const matchFileForResponse = (artifacts) => {
