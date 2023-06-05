@@ -1,105 +1,145 @@
-<p align="center">
-  <a href="https://github.com/actions/typescript-action/actions"><img alt="typescript-action status" src="https://github.com/actions/typescript-action/workflows/build-test/badge.svg"></a>
-</p>
+# Check History Action
 
-# Create a JavaScript Action using TypeScript
+This GitHub Action extracts the `sha` of the last successful run of a specified job, compares it with the latest commit, finds the changed files, and performs a pattern match provided by the user. If the pattern matches any changed files, it returns `true` otherwise, it returns `false`.
 
-Use this template to bootstrap the creation of a TypeScript action.:rocket:
+## Dependencies
 
-This template includes compilation support, tests, a validation workflow, publishing, and versioning guidance.  
+This GitHub Action relies on the following dependencies:
 
-If you are new, there's also a simpler introduction.  See the [Hello World JavaScript Action](https://github.com/actions/hello-world-javascript-action)
+- `@actions/core`: The @actions/core package provides functions for setting and getting input and output variables used in GitHub Actions.
+- `@actions/github`: The @actions/github package provides functions for interacting with the GitHub API in GitHub Actions.
+- `octokit`: The octokit package is used for making API requests to the GitHub API.
+- `picomatch`: The picomatch package is used for pattern matching using regular expressions.
 
-## Create an action from this template
+Ensure that you have these dependencies installed or included in your workflow environment before using this action.
 
-Click the `Use this Template` and provide the new repo details for your action
-
-## Code in Main
-
-> First, you'll need to have a reasonably modern version of `node` handy. This won't work with versions older than 9, for instance.
-
-Install the dependencies  
-```bash
-$ npm install
-```
-
-Build the typescript and package it for distribution
-```bash
-$ npm run build && npm run package
-```
-
-Run the tests :heavy_check_mark:  
-```bash
-$ npm test
-
- PASS  ./index.test.js
-  ✓ throws invalid number (3ms)
-  ✓ wait 500 ms (504ms)
-  ✓ test runs (95ms)
-
-...
-```
-
-## Change action.yml
-
-The action.yml defines the inputs and output for your action.
-
-Update the action.yml with your name, description, inputs and outputs for your action.
-
-See the [documentation](https://help.github.com/en/articles/metadata-syntax-for-github-actions)
-
-## Change the Code
-
-Most toolkit and CI/CD operations involve async operations so the action is run in an async function.
-
-```javascript
-import * as core from '@actions/core';
-...
-
-async function run() {
-  try { 
-      ...
-  } 
-  catch (error) {
-    core.setFailed(error.message);
-  }
-}
-
-run()
-```
-
-See the [toolkit documentation](https://github.com/actions/toolkit/blob/master/README.md#packages) for the various packages.
-
-## Publish to a distribution branch
-
-Actions are run from GitHub repos so we will checkin the packed dist folder. 
-
-Then run [ncc](https://github.com/zeit/ncc) and push the results:
-```bash
-$ npm run package
-$ git add dist
-$ git commit -a -m "prod dependencies"
-$ git push origin releases/v1
-```
-
-Note: We recommend using the `--license` option for ncc, which will create a license file for all of the production node modules used in your project.
-
-Your action is now published! :rocket: 
-
-See the [versioning documentation](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-
-## Validate
-
-You can now validate the action by referencing `./` in a workflow in your repo (see [test.yml](.github/workflows/test.yml))
+## Inputs
 
 ```yaml
-uses: ./
-with:
-  milliseconds: 1000
+# This is to check file
+      - name: Check Changed File
+        uses: saurav0705/check-history-action@v1
+        id: check-changed-file
+        with:
+          GIT_TOKEN: ${{secrets.GIT_SECRET}}
+          KEYS: |
+            JOB_NAME_1-${{github.event.number}} , android/**
+            JOB_NAME_1-${{github.event.number}}, ios/**
+
+# This will be consumed by the job
+      - name: Check Changed File
+        uses: saurav0705/check-history-action@v1
+        id: check-changed-file
+        with:
+          GIT_TOKEN: ${{secrets.GIT_SECRET}}
+          # if UPLOAD_KEYS is present KEYS will be ignored
+          UPLOAD_KEY: JOB_NAME_1-${{github.event.number}}
 ```
 
-See the [actions tab](https://github.com/actions/typescript-action/actions) for runs of this action! :rocket:
+### `GIT_TOKEN` (required)
 
-## Usage:
+The GitHub token used to authenticate API requests. You can use the `{{ secrets.GITHUB_TOKEN }}` token available in your workflow without any additional setup.
 
-After testing you can [create a v1 tag](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) to reference the stable and latest V1 action
+### `KEYS` (required)
+This is the key in which we mention the workflow name and pattern that we want to match which are seperated by `,`.
+
+### `UPLOAD_KEY` (required)
+This is required when you want to update on successfull run of a job.
+
+## Outputs
+
+This Return a `status` object in which the following are present
+
+```json
+{
+  "status" : {
+    "job_1-{pr-number}" : {
+      "shouldRun" : true, // boolean
+      "key" : "job_1-{pr-number}", // string
+      "filesRegex" : "regex", // string
+      "sha":"some-sha", // string
+      "diffFiles" : [ "file-1","file-2" ] // Array<string>
+    }
+  }
+}
+```
+
+### `shouldRun`
+It's a boolean which tell if these 2 commits have pattern matching file change.
+
+### `key`
+It's a string which is the job key for which this is fetched.
+
+### `filesRegex`
+It's a string which is the regex for file path match.
+
+### `sha`
+sha for last successful run.
+
+### `diffFiles`
+Array of files that has been changed between current and last successfull sha.
+
+
+## Usage
+
+To use this GitHub Action in your workflow, create a new YAML file (e.g., .github/workflows/regex-commenter.yml) in your repository and add the following code:
+
+```yaml
+name: Check Changed Files Example
+
+on:
+  pull_request:
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      status : ${{jobs.changed-files.outputs.status}} 
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Run Check Changed Files
+      id: changed-files
+      uses: saurav0705/check-history-action@v1
+      with:
+          GIT_TOKEN: ${{secrets.GIT_SECRET}}
+          KEYS: |
+            JOB_NAME-${{github.event.number}} , src/**
+
+    - name: Print status
+      run: echo "Action status: ${{ steps.regex_commenter.outputs.status }}"
+
+  child_job:
+    runs-on: ubuntu-latest
+    needs : [setup]
+    if: ${{ fromJSON(needs.setup.outputs.status[JOB_NAME-github.event.number].shouldRun) == 'true' }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Install Dependencies
+      run: do something
+
+    - name: Upload sucess
+      uses: saurav0705/check-history-action@v1
+      with:
+          GIT_TOKEN: ${{secrets.GIT_SECRET}}
+          UPLOAD_KEY: JOB_NAME-${{github.event.number}}
+
+```
+
+
+## Support
+
+For any questions or issues regarding this GitHub Action, please open an issue in the repository where the action is hosted.

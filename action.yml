@@ -1,11 +1,19 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Check History Action'
+description: 'Compare commits with file Regex and shows status if it should run the check or not'
+author: 'saurav0705'
 inputs:
-  milliseconds: # change this
+  KEYS: # change this
+    required: false
+    description: 'Define key and regex pattern that needs to be fetched'
+    default: ''
+  GIT_TOKEN: # change this
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: 'GITHUB TOKEN FOR THE REPO'
+    default: ''
+  UPLOAD_KEY:
+    required: false
+    description: This is required to publish the successful sha to repo varaible
+
 runs:
   using: 'node16'
   main: 'dist/index.js'

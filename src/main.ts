@@ -12,17 +12,8 @@ import {postCommentOnPrWithDetails} from './post-comment-on-pr'
 
 import {github} from './github/client'
 
-const ARTIFACTS = 'artifacts'
+const ARTIFACTS = 'KEYS'
 async function run(): Promise<void> {
-  /**
-   * 1. Take Input - DONE
-   * 2. Fetch SHA - DONE
-   * 3. File Diff - DONE
-   * 4. regex match for file diff - DONE
-   * 5. comment on pr - DONE
-   * 6. output should run
-   */
-
   try {
     const GIT_TOKEN = getInput('GIT_TOKEN')
     const UPLOAD_KEY = getInput('UPLOAD_KEY')

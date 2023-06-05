@@ -216,18 +216,10 @@ const regex_match_for_files_1 = __nccwpck_require__(1409);
 const take_input_1 = __nccwpck_require__(7917);
 const post_comment_on_pr_1 = __nccwpck_require__(8749);
 const client_1 = __nccwpck_require__(1495);
-const ARTIFACTS = 'artifacts';
+const ARTIFACTS = 'KEYS';
 function run() {
     var _a, _b, _c, _d;
     return __awaiter(this, void 0, void 0, function* () {
-        /**
-         * 1. Take Input - DONE
-         * 2. Fetch SHA - DONE
-         * 3. File Diff - DONE
-         * 4. regex match for file diff - DONE
-         * 5. comment on pr - DONE
-         * 6. output should run
-         */
         try {
             const GIT_TOKEN = (0, core_1.getInput)('GIT_TOKEN');
             const UPLOAD_KEY = (0, core_1.getInput)('UPLOAD_KEY');
