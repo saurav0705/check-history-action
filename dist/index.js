@@ -231,7 +231,7 @@ function run() {
                 sha: (_d = github_1.context.sha) !== null && _d !== void 0 ? _d : ''
             });
             if (UPLOAD_KEY) {
-                (0, values_from_variables_1.setArtifactValueVariable)(UPLOAD_KEY);
+                (0, values_from_variables_1.setArtifactValueVariable)(`${UPLOAD_KEY}-${client_1.github.CONFIG.issue_number}`);
                 return;
             }
             const artifactsToBeFetched = (0, core_1.getInput)(ARTIFACTS);
@@ -246,7 +246,9 @@ function run() {
             // post a message summary of action
             yield (0, post_comment_on_pr_1.postCommentOnPrWithDetails)(artifactValueWithShaAndFileDiffWithShouldRunStatus);
             // set output
-            (0, core_1.setOutput)('status', artifactValueWithShaAndFileDiffWithShouldRunStatus.reduce((prev, item) => (Object.assign(Object.assign({}, prev), { [item.key]: item })), {}));
+            for (const resp of artifactValueWithShaAndFileDiffWithShouldRunStatus) {
+                (0, core_1.setOutput)(resp.suppliedKey, resp);
+            }
         }
         catch (e) {
             console.log(e);
@@ -280,7 +282,7 @@ const post_comment_on_pr_1 = __nccwpck_require__(1529);
 const postCommentOnPrWithDetails = (artifacts) => __awaiter(void 0, void 0, void 0, function* () {
     const body = artifacts.reduce((prev, artifact) => {
         var _a;
-        return `${prev} \n ${artifact.key} | ${artifact.filesRegex} | ${artifact.sha} | ${(_a = artifact.diffFiles) === null || _a === void 0 ? void 0 : _a.join(',<br/>')} | ${artifact.shouldRun}`;
+        return `${prev} \n ${artifact.suppliedKey} | ${artifact.filesRegex} | ${artifact.sha} | ${(_a = artifact.diffFiles) === null || _a === void 0 ? void 0 : _a.join(',<br/>')} | ${artifact.shouldRun}`;
     }, 'Artifact | Pattern | SHA | Changed Files | Status\n --------- | --------- |--------- |--------- |--------- ');
     yield (0, post_comment_on_pr_1.postCommentOnPR)(body);
 });
@@ -321,12 +323,13 @@ exports.matchFileForResponse = matchFileForResponse;
 /***/ }),
 
 /***/ 7917:
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getArtifactInputs = void 0;
+const client_1 = __nccwpck_require__(1495);
 const parser = (input) => {
     return input
         .trim()
@@ -334,8 +337,9 @@ const parser = (input) => {
         .map(item => {
         const [key, filesRegex] = item.split(',').map(i => i.trim());
         return {
-            key,
-            filesRegex
+            key: `${key}-${client_1.github.CONFIG.issue_number}`,
+            filesRegex,
+            suppliedKey: key
         };
     });
 };
