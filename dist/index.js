@@ -53,7 +53,7 @@ class ArtifactHandler {
                     return null;
                 }
                 (0, utils_1.arrayBufferToFile)(resp, `${ARTIFACT_NAME}.zip`);
-                (0, utils_1.extractFileFromZip)(`${ARTIFACT_NAME}.zip`, `${ARTIFACT_NAME}.txt`, __dirname);
+                (0, utils_1.extractFileFromZip)(`${ARTIFACT_NAME}.zip`, `${ARTIFACT_NAME}.txt`, './');
                 return (0, utils_1.convertFileToString)(`${ARTIFACT_NAME}.txt`);
             }
             catch (e) {
@@ -465,11 +465,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.extractFileFromZip = exports.arrayBufferToFile = exports.convertStringToFile = exports.convertFileToString = void 0;
 const fs_1 = __importDefault(__nccwpck_require__(7147));
-const path_1 = __importDefault(__nccwpck_require__(1017));
 const adm_zip_1 = __importDefault(__nccwpck_require__(6761));
 const convertFileToString = (filePath) => {
     try {
-        return fs_1.default.readFileSync(path_1.default.join(__dirname, filePath)).toString();
+        return fs_1.default.readFileSync(filePath).toString();
     }
     catch (e) {
         console.error(`Something went wrong while reading the file present at ${filePath} :: ${e}`);
@@ -490,7 +489,7 @@ const convertStringToFile = (filename, content) => {
 exports.convertStringToFile = convertStringToFile;
 function arrayBufferToFile(arrayBuffer, fileName) {
     const buffer = Buffer.from(arrayBuffer);
-    fs_1.default.writeFileSync(path_1.default.join(__dirname, fileName), buffer);
+    fs_1.default.writeFileSync(fileName, buffer);
 }
 exports.arrayBufferToFile = arrayBufferToFile;
 function extractFileFromZip(zipFilePath, fileName, destinationPath) {
