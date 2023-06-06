@@ -10,7 +10,6 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.artifact = void 0;
 const artifact_1 = __nccwpck_require__(2605);
 const utils_1 = __nccwpck_require__(918);
-const client_1 = __nccwpck_require__(1495);
 class Artifact {
     constructor() {
         this.client = (0, artifact_1.create)();
@@ -19,9 +18,8 @@ class Artifact {
         this.client = client;
     }
     uploadArtifact(name, value) {
-        const PR_NUMBER = client_1.github.CONFIG.issue_number;
-        (0, utils_1.createFile)(`${name}-${PR_NUMBER}.txt`, value);
-        this.client.uploadArtifact(name, [`${name}-${PR_NUMBER}.txt`], '.', {});
+        (0, utils_1.createFile)(`${name}.txt`, value);
+        this.client.uploadArtifact(name, [`${name}.txt`], '.', {});
     }
 }
 exports.artifact = new Artifact();
@@ -416,7 +414,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.createFile = exports.convertFileToString = void 0;
 const fs_1 = __importDefault(__nccwpck_require__(7147));
-const path_1 = __importDefault(__nccwpck_require__(1017));
 const convertFileToString = (filePath) => {
     try {
         return fs_1.default.readFileSync(filePath).toString();
@@ -429,7 +426,8 @@ const convertFileToString = (filePath) => {
 exports.convertFileToString = convertFileToString;
 const createFile = (filename, content) => {
     try {
-        fs_1.default.writeFileSync(path_1.default.join(__dirname + filename), content);
+        console.log(`Writing file ${filename} with ${content}`);
+        fs_1.default.writeFileSync(filename, content);
     }
     catch (e) {
         console.error(`Error writing file with ${filename}`);
