@@ -240,10 +240,13 @@ function run() {
             console.log({ artifacts });
             // Populate SHA in input
             const artifactsValueWithSha = yield (0, values_from_variables_1.getAllArtifactValues)(artifacts);
+            console.log({ artifactsValueWithSha });
             // Add file diff to each Object
             const artifactValueWithShaAndFileDiff = yield (0, get_diff_files_1.getFileDiffForAllArtifacts)(artifactsValueWithSha);
+            console.log({ artifactValueWithShaAndFileDiff });
             // Complete Response for action
             const artifactValueWithShaAndFileDiffWithShouldRunStatus = (0, regex_match_for_files_1.matchFileForResponse)(artifactValueWithShaAndFileDiff);
+            console.log({ artifactValueWithShaAndFileDiffWithShouldRunStatus });
             // post a message summary of action
             yield (0, post_comment_on_pr_1.postCommentOnPrWithDetails)(artifactValueWithShaAndFileDiffWithShouldRunStatus);
             // set output
