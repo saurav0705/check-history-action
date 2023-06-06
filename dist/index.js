@@ -361,15 +361,16 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.postCommentOnPrWithDetails = void 0;
 const post_comment_on_pr_1 = __nccwpck_require__(1529);
 const makeSummaryForItem = (item) => {
+    var _a, _b;
     return `<details>
   <summary><h3>${item.suppliedKey}<code>${item.shouldRun}</code></h3></summary>\n
-  - Last Successfull Commit : \`${item.sha}\`\n
+  - Last Successfull Run Commit: \`${item.sha}\`\n
   - Pattern: \`${item.filesRegex}\`\n
   - Status: \`${item.shouldRun}\`\n
   ${item.diffUrl ? `- Diff Url: ${item.diffUrl}` : ''}
-  ${item.diffFiles
-        ? `\`\`\`bash #Diff Files:\n${item.diffFiles.join('\n')}\`\`\``
-        : ''}
+  ${item.diffFiles ? '- Diff Files:\n' : ''}
+	${(_b = (_a = item.diffFiles) === null || _a === void 0 ? void 0 : _a.map(file => `\`${file}\``).join('\n')) !== null && _b !== void 0 ? _b : ''}
+
 </details>`;
 };
 const postCommentOnPrWithDetails = (artifacts) => __awaiter(void 0, void 0, void 0, function* () {
