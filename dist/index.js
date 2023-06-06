@@ -89,6 +89,32 @@ exports.github = new GithubClient();
 
 /***/ }),
 
+/***/ 2778:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getLatestCommitFromBranch = void 0;
+const client_1 = __nccwpck_require__(1495);
+const getLatestCommitFromBranch = (branch) => __awaiter(void 0, void 0, void 0, function* () {
+    const resp = yield client_1.github.client.rest.repos.getCommit(Object.assign(Object.assign({}, client_1.github.CONFIG), { ref: branch }));
+    return resp.data.sha;
+});
+exports.getLatestCommitFromBranch = getLatestCommitFromBranch;
+
+
+/***/ }),
+
 /***/ 8871:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -219,9 +245,10 @@ const regex_match_for_files_1 = __nccwpck_require__(1409);
 const take_input_1 = __nccwpck_require__(7917);
 const post_comment_on_pr_1 = __nccwpck_require__(8749);
 const client_1 = __nccwpck_require__(1495);
+const get_current_commit_1 = __nccwpck_require__(2778);
 const ARTIFACTS = 'KEYS';
 function run() {
-    var _a, _b, _c, _d;
+    var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const GIT_TOKEN = (0, core_1.getInput)('GIT_TOKEN');
@@ -231,8 +258,10 @@ function run() {
                 repo: (_a = github_1.context.repo.repo) !== null && _a !== void 0 ? _a : '',
                 owner: (_b = github_1.context.repo.owner) !== null && _b !== void 0 ? _b : '',
                 issue_number: (_c = github_1.context.payload.number) !== null && _c !== void 0 ? _c : 0,
-                sha: (_d = github_1.context.sha) !== null && _d !== void 0 ? _d : ''
+                sha: ''
             });
+            const sha = yield (0, get_current_commit_1.getLatestCommitFromBranch)(github_1.context.ref);
+            client_1.github.setConfig(Object.assign(Object.assign({}, client_1.github.CONFIG), { sha }));
             if (UPLOAD_KEY) {
                 (0, values_from_variables_1.setArtifactValueVariable)(`${UPLOAD_KEY}-${client_1.github.CONFIG.issue_number}`);
                 return;
@@ -302,6 +331,11 @@ const postCommentOnPrWithDetails = (artifacts) => __awaiter(void 0, void 0, void
     yield (0, post_comment_on_pr_1.postCommentOnPR)(body);
 });
 exports.postCommentOnPrWithDetails = postCommentOnPrWithDetails;
+/**
+ * saved sha - 03062fd40e701fa8b22f5f17d1959945f95175f8
+ * current sha - 416b78c72fc85789085c5f884c8614c1cefbdc47
+ * commit-id - af648261986787ae5674a4a207df44ae68234e6e
+ */
 
 
 /***/ }),
