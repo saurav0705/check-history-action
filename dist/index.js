@@ -161,6 +161,7 @@ const deleteArtifacts = (artifactIds) => __awaiter(void 0, void 0, void 0, funct
 });
 exports.deleteArtifacts = deleteArtifacts;
 const downloadArtifact = (artifactName) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('download called  ', artifactName);
     try {
         const artifactId = yield (0, exports.getArtifactsByName)(artifactName);
         const resp = yield client_1.github.client.rest.actions.downloadArtifact(Object.assign(Object.assign({}, client_1.github.CONFIG), { artifact_id: artifactId[0], archive_format: 'zip' }));
