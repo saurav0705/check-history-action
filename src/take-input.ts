@@ -1,4 +1,5 @@
 import {github} from './github/client'
+import yml from 'js-yaml'
 
 export type InputObjectType = {
   key: string
@@ -6,18 +7,21 @@ export type InputObjectType = {
   suppliedKey: string
 }
 
+type InputYaml = {
+  key: string
+  pattern: string
+}
+
 const parser = (input: string): InputObjectType[] => {
-  return input
-    .trim()
-    .split('\n')
-    .map(item => {
-      const [key, filesRegex] = item.split(',').map(i => i.trim())
-      return {
-        key: `${key}-${github.CONFIG.issue_number}`,
-        filesRegex,
-        suppliedKey: key
-      }
-    })
+  const config = yml.load(input) as InputYaml[]
+
+  return config.map(item => {
+    return {
+      key: `${item.key}-${github.CONFIG.issue_number}`,
+      filesRegex: item.pattern,
+      suppliedKey: item.key
+    }
+  })
 }
 
 export const getArtifactInputs = (

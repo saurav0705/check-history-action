@@ -1,16 +1,14 @@
 import {getInput, setOutput, setFailed} from '@actions/core'
 import {context} from '@actions/github'
 
-import {
-  getAllArtifactValues,
-  setArtifactValueVariable
-} from './values-from-variables'
+import {getAllArtifactValues} from './values-from-variables'
 import {getFileDiffForAllArtifacts} from './get-diff-files'
 import {matchFileForResponse} from './regex-match-for-files'
 import {getArtifactInputs} from './take-input'
 import {postCommentOnPrWithDetails} from './post-comment-on-pr'
 
 import {github} from './github/client'
+import {artifact} from './artifact'
 
 const ARTIFACTS = 'KEYS'
 async function run(): Promise<void> {
@@ -23,11 +21,11 @@ async function run(): Promise<void> {
       repo: context.repo.repo ?? '',
       owner: context.repo.owner ?? '',
       issue_number: context.payload.number ?? 0,
-      sha: context.sha ?? ''
+      sha: context.payload.after ?? ''
     })
 
     if (UPLOAD_KEY) {
-      setArtifactValueVariable(`${UPLOAD_KEY}-${github.CONFIG.issue_number}`)
+      await artifact.uploadArtifact(UPLOAD_KEY, github.CONFIG.sha)
       return
     }
 
@@ -56,8 +54,7 @@ async function run(): Promise<void> {
       setOutput(resp.suppliedKey, resp)
     }
   } catch (e) {
-    console.log(e)
-    console.error(`Error while executing action ::  ${e}`)
+    console.error(`Error while executing action :: `, e)
     setFailed((e as Error).message)
   }
 }

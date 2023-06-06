@@ -10,6 +10,8 @@ This GitHub Action relies on the following dependencies:
 - `@actions/github`: The @actions/github package provides functions for interacting with the GitHub API in GitHub Actions.
 - `octokit`: The octokit package is used for making API requests to the GitHub API.
 - `picomatch`: The picomatch package is used for pattern matching using regular expressions.
+- `@actions/artifacts`: The @actions/artifacts package is used for uploading and downloading artifacts.
+- `adm-zip`: The adm-zip package is used for unzipping the zip files.
 
 Ensure that you have these dependencies installed or included in your workflow environment before using this action.
 
@@ -23,8 +25,10 @@ Ensure that you have these dependencies installed or included in your workflow e
         with:
           GIT_TOKEN: ${{secrets.GIT_SECRET}}
           KEYS: |
-            JOB_NAME_1 , android/**
-            JOB_NAME_1, ios/**
+            - key: android-lint
+              pattern: android/**
+            - key: android-detekt
+              pattern: android/**
 
 # This will be consumed by the job
       - name: Check Changed File
@@ -52,7 +56,6 @@ This Return a `status` object in which the following are present
 
 ```json
 {
-  "status" : {
     "job_1" : {
       "shouldRun" : true, // boolean
       "key" : "job_1-{pr-number}", // string
@@ -61,7 +64,6 @@ This Return a `status` object in which the following are present
       "sha":"some-sha", // string
       "diffFiles" : [ "file-1","file-2" ] // Array<string>
     }
-  }
 }
 ```
 
@@ -111,7 +113,10 @@ jobs:
       with:
           GIT_TOKEN: ${{secrets.GIT_SECRET}}
           KEYS: |
-            JOB_NAME, src/**
+            - key: android-lint
+              pattern: android/**
+            - key: android-detekt
+              pattern: android/**
 
     - name: Print status
       run: echo "Action status: ${{ steps.regex_commenter.outputs.status }}"
