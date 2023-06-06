@@ -108,6 +108,7 @@ exports.getLatestCommitFromBranch = void 0;
 const client_1 = __nccwpck_require__(1495);
 const getLatestCommitFromBranch = (branch) => __awaiter(void 0, void 0, void 0, function* () {
     const resp = yield client_1.github.client.rest.repos.getCommit(Object.assign(Object.assign({}, client_1.github.CONFIG), { ref: branch }));
+    console.log({ resp });
     return resp.data.sha;
 });
 exports.getLatestCommitFromBranch = getLatestCommitFromBranch;
