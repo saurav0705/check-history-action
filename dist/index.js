@@ -36,15 +36,15 @@ const getFileDiffForAllArtifacts = (artifacts) => __awaiter(void 0, void 0, void
         try {
             if (artifact.sha) {
                 const diffFiles = yield (0, exports.getDiffFiles)(artifact.sha, client_1.github.CONFIG.sha);
-                resp.push(Object.assign(Object.assign({}, artifact), { diffFiles }));
+                resp.push(Object.assign(Object.assign({}, artifact), { diffFiles: diffFiles.files, diffUrl: diffFiles.url }));
             }
             else {
-                resp.push(Object.assign(Object.assign({}, artifact), { diffFiles: null }));
+                resp.push(Object.assign(Object.assign({}, artifact), { diffFiles: null, diffUrl: null }));
             }
         }
         catch (e) {
             console.error(`Error file fetching file diff : ${e}`);
-            resp.push(Object.assign(Object.assign({}, artifact), { diffFiles: null }));
+            resp.push(Object.assign(Object.assign({}, artifact), { diffFiles: null, diffUrl: null }));
         }
     }
     return resp;
@@ -111,7 +111,10 @@ const getFileDiffFromGithub = ({ base, head }) => __awaiter(void 0, void 0, void
     console.log(`fetching file diff for ${base} ${head}`);
     const resp = yield client_1.github.client.rest.repos.compareCommits(Object.assign({ base,
         head }, client_1.github.CONFIG));
-    return (_b = (_a = resp.data.files) === null || _a === void 0 ? void 0 : _a.map(item => item.filename)) !== null && _b !== void 0 ? _b : [];
+    return {
+        files: (_b = (_a = resp.data.files) === null || _a === void 0 ? void 0 : _a.map(item => item.filename)) !== null && _b !== void 0 ? _b : [],
+        url: resp.data.diff_url
+    };
 });
 exports.getFileDiffFromGithub = getFileDiffFromGithub;
 
@@ -237,16 +240,12 @@ function run() {
             const artifactsToBeFetched = (0, core_1.getInput)(ARTIFACTS);
             // Get Input from action
             const { artifacts } = (0, take_input_1.getArtifactInputs)(artifactsToBeFetched);
-            console.log({ artifacts });
             // Populate SHA in input
             const artifactsValueWithSha = yield (0, values_from_variables_1.getAllArtifactValues)(artifacts);
-            console.log({ artifactsValueWithSha });
             // Add file diff to each Object
             const artifactValueWithShaAndFileDiff = yield (0, get_diff_files_1.getFileDiffForAllArtifacts)(artifactsValueWithSha);
-            console.log({ artifactValueWithShaAndFileDiff });
             // Complete Response for action
             const artifactValueWithShaAndFileDiffWithShouldRunStatus = (0, regex_match_for_files_1.matchFileForResponse)(artifactValueWithShaAndFileDiff);
-            console.log({ artifactValueWithShaAndFileDiffWithShouldRunStatus });
             // post a message summary of action
             yield (0, post_comment_on_pr_1.postCommentOnPrWithDetails)(artifactValueWithShaAndFileDiffWithShouldRunStatus);
             // set output
@@ -283,11 +282,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.postCommentOnPrWithDetails = void 0;
 const post_comment_on_pr_1 = __nccwpck_require__(1529);
+const makeSummaryForItem = (item) => {
+    var _a, _b;
+    return `<details>
+  <summary>${item.suppliedKey}</summary>
+  - SHA : \`${item.sha}\`
+  - Pattern: \`${item.filesRegex}\`
+  - Status: ${item.shouldRun}
+  - Diff Files:
+	${(_b = (_a = item.diffFiles) === null || _a === void 0 ? void 0 : _a.map(file => `\`${file}\``)) !== null && _b !== void 0 ? _b : 'No Diff Found'}
+${item.diffUrl ? `- Diff Url: ${item.diffUrl}` : ''}
+
+</details>`;
+};
 const postCommentOnPrWithDetails = (artifacts) => __awaiter(void 0, void 0, void 0, function* () {
-    const body = artifacts.reduce((prev, artifact) => {
-        var _a;
-        return `${prev} \n ${artifact.suppliedKey} | "${artifact.filesRegex}" | ${artifact.sha} | <ul>${(_a = artifact.diffFiles) === null || _a === void 0 ? void 0 : _a.map(item => `<li>${item}</li>`).join('')}</ul> | ${artifact.shouldRun}`;
-    }, 'Key | Pattern | SHA | Changed Files | Status\n --------- | --------- |--------- |--------- |--------- ');
+    const body = artifacts.map(makeSummaryForItem).join('\n');
     yield (0, post_comment_on_pr_1.postCommentOnPR)(body);
 });
 exports.postCommentOnPrWithDetails = postCommentOnPrWithDetails;
