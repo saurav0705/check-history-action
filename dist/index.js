@@ -236,7 +236,7 @@ const getFileDiffFromGithub = ({ base, head }) => __awaiter(void 0, void 0, void
         head }, client_1.github.CONFIG));
     return {
         files: (_b = (_a = resp.data.files) === null || _a === void 0 ? void 0 : _a.map(item => item.filename)) !== null && _b !== void 0 ? _b : [],
-        url: resp.data.diff_url
+        url: resp.data.html_url
     };
 });
 exports.getFileDiffFromGithub = getFileDiffFromGithub;
@@ -298,7 +298,6 @@ const take_input_1 = __nccwpck_require__(6638);
 const post_comment_on_pr_1 = __nccwpck_require__(8749);
 const client_1 = __nccwpck_require__(1495);
 const artifact_1 = __nccwpck_require__(7917);
-// import {getLatestCommitFromBranch} from './github/get-current-commit'
 const ARTIFACTS = 'KEYS';
 function run() {
     var _a, _b, _c, _d;
@@ -314,7 +313,6 @@ function run() {
                 sha: (_d = github_1.context.payload.after) !== null && _d !== void 0 ? _d : ''
             });
             if (UPLOAD_KEY) {
-                // setArtifactValueVariable(`${UPLOAD_KEY}-${github.CONFIG.issue_number}`)
                 yield artifact_1.artifact.uploadArtifact(UPLOAD_KEY, client_1.github.CONFIG.sha);
                 return;
             }
@@ -363,16 +361,15 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.postCommentOnPrWithDetails = void 0;
 const post_comment_on_pr_1 = __nccwpck_require__(1529);
 const makeSummaryForItem = (item) => {
-    var _a, _b;
     return `<details>
-  <summary><h3>${item.suppliedKey}</h3></summary>\n
-  - SHA : \`${item.sha}\`\n
+  <summary><h3>${item.suppliedKey}<code>${item.shouldRun}</code></h3></summary>\n
+  - Last Successfull Commit : \`${item.sha}\`\n
   - Pattern: \`${item.filesRegex}\`\n
   - Status: \`${item.shouldRun}\`\n
-  ${item.diffFiles ? '- Diff Files:\n' : ''}
-	${(_b = (_a = item.diffFiles) === null || _a === void 0 ? void 0 : _a.map(file => `\`${file}\``).join('\n')) !== null && _b !== void 0 ? _b : ''}
-${item.diffUrl ? `- Diff Url: ${item.diffUrl}` : ''}
-
+  ${item.diffUrl ? `- Diff Url: ${item.diffUrl}` : ''}
+  ${item.diffFiles
+        ? `\`\`\`bash #Diff Files:\n${item.diffFiles.join('\n')}\`\`\``
+        : ''}
 </details>`;
 };
 const postCommentOnPrWithDetails = (artifacts) => __awaiter(void 0, void 0, void 0, function* () {
@@ -382,11 +379,6 @@ const postCommentOnPrWithDetails = (artifacts) => __awaiter(void 0, void 0, void
     yield (0, post_comment_on_pr_1.postCommentOnPR)(body);
 });
 exports.postCommentOnPrWithDetails = postCommentOnPrWithDetails;
-/**
- * saved sha - 03062fd40e701fa8b22f5f17d1959945f95175f8
- * current sha - 416b78c72fc85789085c5f884c8614c1cefbdc47
- * commit-id - af648261986787ae5674a4a207df44ae68234e6e
- */
 
 
 /***/ }),
