@@ -47,7 +47,7 @@ class ArtifactHandler {
         return __awaiter(this, void 0, void 0, function* () {
             const ARTIFACT_NAME = this.generateArtifactName(name);
             const resp = yield this.client.downloadArtifact(ARTIFACT_NAME);
-            console.log((0, utils_1.convertFileToString)(resp.downloadPath));
+            console.log((0, utils_1.convertFileToString)(`${resp.downloadPath}/${ARTIFACT_NAME}`));
         });
     }
 }
