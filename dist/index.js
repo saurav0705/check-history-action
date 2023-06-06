@@ -43,6 +43,13 @@ class ArtifactHandler {
             this.client.uploadArtifact(ARTIFACT_NAME, [`${ARTIFACT_NAME}.txt`], '.', {});
         });
     }
+    downloadArtifact(name) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const ARTIFACT_NAME = this.generateArtifactName(name);
+            const resp = yield this.client.downloadArtifact(ARTIFACT_NAME);
+            console.log((0, utils_1.convertFileToString)(resp.downloadPath));
+        });
+    }
 }
 exports.artifact = new ArtifactHandler();
 
@@ -319,6 +326,7 @@ function run() {
         try {
             const GIT_TOKEN = (0, core_1.getInput)('GIT_TOKEN');
             const UPLOAD_KEY = (0, core_1.getInput)('UPLOAD_KEY');
+            const DOWNLOAD_KEY = (0, core_1.getInput)('DOWNLOAD_KEY');
             client_1.github.setClient(GIT_TOKEN);
             client_1.github.setConfig({
                 repo: (_a = github_1.context.repo.repo) !== null && _a !== void 0 ? _a : '',
@@ -329,6 +337,10 @@ function run() {
             if (UPLOAD_KEY) {
                 // setArtifactValueVariable(`${UPLOAD_KEY}-${github.CONFIG.issue_number}`)
                 yield artifact_1.artifact.uploadArtifact(UPLOAD_KEY, client_1.github.CONFIG.sha);
+                return;
+            }
+            if (DOWNLOAD_KEY) {
+                yield artifact_1.artifact.downloadArtifact(UPLOAD_KEY);
                 return;
             }
             const artifactsToBeFetched = (0, core_1.getInput)(ARTIFACTS);
