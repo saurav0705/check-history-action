@@ -14,7 +14,9 @@ inputs:
     required: false
     description: This is required to publish the successful sha to repo varaible
 
-
+branding:
+  icon: cloud-lightning
+  color: blue
 runs:
   using: 'node16'
   main: 'dist/index.js'
