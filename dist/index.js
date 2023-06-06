@@ -286,11 +286,11 @@ const makeSummaryForItem = (item) => {
     var _a, _b;
     return `<details>
   <summary>${item.suppliedKey}</summary>
-  - SHA : \`${item.sha}\`
-  - Pattern: \`${item.filesRegex}\`
-  - Status: ${item.shouldRun}
-  - Diff Files:
-	${(_b = (_a = item.diffFiles) === null || _a === void 0 ? void 0 : _a.map(file => `\`${file}\``)) !== null && _b !== void 0 ? _b : 'No Diff Found'}
+  - SHA : ${item.sha}\n
+  - Pattern: ${item.filesRegex}\n
+  - Status: ${item.shouldRun}\n
+  - Diff Files:\n
+	${(_b = (_a = item.diffFiles) === null || _a === void 0 ? void 0 : _a.map(file => `\`${file}\``).join('\n')) !== null && _b !== void 0 ? _b : 'No Diff Found\n'}
 ${item.diffUrl ? `- Diff Url: ${item.diffUrl}` : ''}
 
 </details>`;
