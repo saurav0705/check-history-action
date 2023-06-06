@@ -1,7 +1,7 @@
 require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 7263:
+/***/ 7917:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -21,7 +21,6 @@ const artifact_1 = __nccwpck_require__(2605);
 const utils_1 = __nccwpck_require__(918);
 const artifacts_1 = __nccwpck_require__(5734);
 const client_1 = __nccwpck_require__(1495);
-const child_process_1 = __nccwpck_require__(2081);
 class ArtifactHandler {
     constructor() {
         this.client = (0, artifact_1.create)();
@@ -46,10 +45,15 @@ class ArtifactHandler {
     }
     downloadArtifact(name) {
         return __awaiter(this, void 0, void 0, function* () {
-            const ARTIFACT_NAME = this.generateArtifactName(name);
-            const resp = yield this.client.downloadArtifact(ARTIFACT_NAME);
-            console.log((0, child_process_1.execSync)(`ls ${resp.downloadPath}`));
-            console.log((0, utils_1.convertFileToString)(`${resp.downloadPath}/${ARTIFACT_NAME}.txt`));
+            try {
+                const ARTIFACT_NAME = this.generateArtifactName(name);
+                const resp = yield this.client.downloadArtifact(ARTIFACT_NAME);
+                return (0, utils_1.convertFileToString)(`${resp.downloadPath}/${ARTIFACT_NAME}.txt`);
+            }
+            catch (e) {
+                console.error(`Error while downloading artifact ${name}`, e);
+                return null;
+            }
         });
     }
 }
@@ -221,51 +225,6 @@ exports.getFileDiffFromGithub = getFileDiffFromGithub;
 
 /***/ }),
 
-/***/ 2146:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getGithubVariable = exports.setGithubVariable = void 0;
-const client_1 = __nccwpck_require__(1495);
-const setGithubVariable = (name, value) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        console.log(`Setting Variable with ${name} with value ${JSON.stringify(value)}`);
-        yield client_1.github.client.rest.actions.updateRepoVariable(Object.assign(Object.assign({}, client_1.github.CONFIG), { name, value: JSON.stringify(value) }));
-    }
-    catch (e) {
-        console.log(e);
-        console.error(`Error While Setting ${name} with  value ${JSON.stringify(value)}`);
-    }
-});
-exports.setGithubVariable = setGithubVariable;
-const getGithubVariable = (name) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        console.log(`Getting Variable Value with ${name}`);
-        const data = yield client_1.github.client.rest.actions.getRepoVariable(Object.assign(Object.assign({}, client_1.github.CONFIG), { name }));
-        return data.data.value;
-    }
-    catch (e) {
-        console.log(e);
-        console.error(`Error While Getting ${name}`);
-        return '';
-    }
-});
-exports.getGithubVariable = getGithubVariable;
-
-
-/***/ }),
-
 /***/ 1529:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -316,10 +275,10 @@ const github_1 = __nccwpck_require__(5438);
 const values_from_variables_1 = __nccwpck_require__(4357);
 const get_diff_files_1 = __nccwpck_require__(3441);
 const regex_match_for_files_1 = __nccwpck_require__(1409);
-const take_input_1 = __nccwpck_require__(7917);
+const take_input_1 = __nccwpck_require__(6638);
 const post_comment_on_pr_1 = __nccwpck_require__(8749);
 const client_1 = __nccwpck_require__(1495);
-const artifact_1 = __nccwpck_require__(7263);
+const artifact_1 = __nccwpck_require__(7917);
 // import {getLatestCommitFromBranch} from './github/get-current-commit'
 const ARTIFACTS = 'KEYS';
 function run() {
@@ -328,7 +287,6 @@ function run() {
         try {
             const GIT_TOKEN = (0, core_1.getInput)('GIT_TOKEN');
             const UPLOAD_KEY = (0, core_1.getInput)('UPLOAD_KEY');
-            const DOWNLOAD_KEY = (0, core_1.getInput)('DOWNLOAD_KEY');
             client_1.github.setClient(GIT_TOKEN);
             client_1.github.setConfig({
                 repo: (_a = github_1.context.repo.repo) !== null && _a !== void 0 ? _a : '',
@@ -339,10 +297,6 @@ function run() {
             if (UPLOAD_KEY) {
                 // setArtifactValueVariable(`${UPLOAD_KEY}-${github.CONFIG.issue_number}`)
                 yield artifact_1.artifact.uploadArtifact(UPLOAD_KEY, client_1.github.CONFIG.sha);
-                return;
-            }
-            if (DOWNLOAD_KEY) {
-                yield artifact_1.artifact.downloadArtifact(DOWNLOAD_KEY);
                 return;
             }
             const artifactsToBeFetched = (0, core_1.getInput)(ARTIFACTS);
@@ -449,7 +403,7 @@ exports.matchFileForResponse = matchFileForResponse;
 
 /***/ }),
 
-/***/ 7917:
+/***/ 6638:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -532,22 +486,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.setArtifactValueVariable = exports.getAllArtifactValues = void 0;
-const github_variables_1 = __nccwpck_require__(2146);
-const client_1 = __nccwpck_require__(1495);
-const SHA_LOG = 'sha_log';
+exports.getAllArtifactValues = void 0;
+const artifact_1 = __nccwpck_require__(7917);
 const getAllArtifactValues = (artifacts) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     const resp = [];
-    let values = {};
-    const variable = yield (0, github_variables_1.getGithubVariable)(SHA_LOG);
-    if (variable.length) {
-        values = JSON.parse(variable);
-    }
     for (const _artifact of artifacts) {
         try {
             console.log(`Fetching artifact : ${_artifact.key}....`);
-            resp.push(Object.assign(Object.assign({}, _artifact), { sha: (_a = values[_artifact.key]) !== null && _a !== void 0 ? _a : null }));
+            const value = yield artifact_1.artifact.downloadArtifact(_artifact.key);
+            resp.push(Object.assign(Object.assign({}, _artifact), { sha: value }));
         }
         catch (e) {
             console.error(`Error in fetching ${_artifact.key} :: ${e}`);
@@ -557,15 +504,6 @@ const getAllArtifactValues = (artifacts) => __awaiter(void 0, void 0, void 0, fu
     return resp;
 });
 exports.getAllArtifactValues = getAllArtifactValues;
-const setArtifactValueVariable = (key) => __awaiter(void 0, void 0, void 0, function* () {
-    const values = yield (0, github_variables_1.getGithubVariable)(SHA_LOG);
-    if (!values.length) {
-        yield (0, github_variables_1.setGithubVariable)(key, { [key]: client_1.github.CONFIG.sha });
-        return;
-    }
-    yield (0, github_variables_1.setGithubVariable)(key, Object.assign(Object.assign({}, JSON.parse(values)), { [key]: client_1.github.CONFIG.sha }));
-});
-exports.setArtifactValueVariable = setArtifactValueVariable;
 
 
 /***/ }),
@@ -53588,14 +53526,6 @@ module.exports = require("assert");
 
 "use strict";
 module.exports = require("buffer");
-
-/***/ }),
-
-/***/ 2081:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("child_process");
 
 /***/ }),
 
