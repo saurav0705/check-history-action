@@ -285,18 +285,20 @@ const post_comment_on_pr_1 = __nccwpck_require__(1529);
 const makeSummaryForItem = (item) => {
     var _a, _b;
     return `<details>
-  <summary>${item.suppliedKey}</summary>\n
+  <summary><h3>${item.suppliedKey}</h3></summary>\n
   - SHA : \`${item.sha}\`\n
   - Pattern: \`${item.filesRegex}\`\n
   - Status: \`${item.shouldRun}\`\n
-  - Diff Files:\n
-	${(_b = (_a = item.diffFiles) === null || _a === void 0 ? void 0 : _a.map(file => `\`${file}\``).join('\n')) !== null && _b !== void 0 ? _b : 'No Diff Found\n'}
+  ${item.diffFiles ? '- Diff Files:\n' : ''}
+	${(_b = (_a = item.diffFiles) === null || _a === void 0 ? void 0 : _a.map(file => `\`${file}\``).join('\n')) !== null && _b !== void 0 ? _b : ''}
 ${item.diffUrl ? `- Diff Url: ${item.diffUrl}` : ''}
 
 </details>`;
 };
 const postCommentOnPrWithDetails = (artifacts) => __awaiter(void 0, void 0, void 0, function* () {
-    const body = artifacts.map(makeSummaryForItem).join('\n');
+    const body = `# History Action Summary\n${artifacts
+        .map(makeSummaryForItem)
+        .join('\n')}`;
     yield (0, post_comment_on_pr_1.postCommentOnPR)(body);
 });
 exports.postCommentOnPrWithDetails = postCommentOnPrWithDetails;
