@@ -47,6 +47,7 @@ class ArtifactHandler {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const ARTIFACT_NAME = this.generateArtifactName(name);
+                console.log(`Fetching artifact ${name} with key :: ${ARTIFACT_NAME}`);
                 const resp = yield this.client.downloadArtifact(ARTIFACT_NAME);
                 return (0, utils_1.convertFileToString)(`${resp.downloadPath}/${ARTIFACT_NAME}.txt`);
             }
@@ -492,8 +493,8 @@ const getAllArtifactValues = (artifacts) => __awaiter(void 0, void 0, void 0, fu
     const resp = [];
     for (const _artifact of artifacts) {
         try {
-            console.log(`Fetching artifact : ${_artifact.key}....`);
-            const value = yield artifact_1.artifact.downloadArtifact(_artifact.key);
+            console.log(`Fetching artifact : ${_artifact.suppliedKey}....`);
+            const value = yield artifact_1.artifact.downloadArtifact(_artifact.suppliedKey);
             resp.push(Object.assign(Object.assign({}, _artifact), { sha: value }));
         }
         catch (e) {
