@@ -21,6 +21,7 @@ const artifact_1 = __nccwpck_require__(2605);
 const utils_1 = __nccwpck_require__(918);
 const artifacts_1 = __nccwpck_require__(5734);
 const client_1 = __nccwpck_require__(1495);
+const child_process_1 = __nccwpck_require__(2081);
 class ArtifactHandler {
     constructor() {
         this.client = (0, artifact_1.create)();
@@ -47,7 +48,8 @@ class ArtifactHandler {
         return __awaiter(this, void 0, void 0, function* () {
             const ARTIFACT_NAME = this.generateArtifactName(name);
             const resp = yield this.client.downloadArtifact(ARTIFACT_NAME);
-            console.log((0, utils_1.convertFileToString)(`${resp.downloadPath}/${ARTIFACT_NAME}`));
+            console.log((0, child_process_1.execSync)(`ls ${resp.downloadPath}`));
+            console.log((0, utils_1.convertFileToString)(`${resp.downloadPath}/${ARTIFACT_NAME}.txt`));
         });
     }
 }
@@ -53586,6 +53588,14 @@ module.exports = require("assert");
 
 "use strict";
 module.exports = require("buffer");
+
+/***/ }),
+
+/***/ 2081:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("child_process");
 
 /***/ }),
 
