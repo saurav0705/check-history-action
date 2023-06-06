@@ -260,6 +260,7 @@ function run() {
                 issue_number: (_c = github_1.context.payload.number) !== null && _c !== void 0 ? _c : 0,
                 sha: ''
             });
+            console.log({ context: github_1.context });
             const sha = yield (0, get_current_commit_1.getLatestCommitFromBranch)(github_1.context.ref);
             client_1.github.setConfig(Object.assign(Object.assign({}, client_1.github.CONFIG), { sha }));
             if (UPLOAD_KEY) {
