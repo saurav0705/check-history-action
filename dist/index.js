@@ -285,10 +285,10 @@ const post_comment_on_pr_1 = __nccwpck_require__(1529);
 const makeSummaryForItem = (item) => {
     var _a, _b;
     return `<details>
-  <summary>${item.suppliedKey}</summary>
-  - SHA : ${item.sha}\n
-  - Pattern: ${item.filesRegex}\n
-  - Status: ${item.shouldRun}\n
+  <summary>${item.suppliedKey}</summary>\n
+  - SHA : \`${item.sha}\`\n
+  - Pattern: \`${item.filesRegex}\`\n
+  - Status: \`${item.shouldRun}\`\n
   - Diff Files:\n
 	${(_b = (_a = item.diffFiles) === null || _a === void 0 ? void 0 : _a.map(file => `\`${file}\``).join('\n')) !== null && _b !== void 0 ? _b : 'No Diff Found\n'}
 ${item.diffUrl ? `- Diff Url: ${item.diffUrl}` : ''}
