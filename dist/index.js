@@ -237,6 +237,7 @@ function run() {
             const artifactsToBeFetched = (0, core_1.getInput)(ARTIFACTS);
             // Get Input from action
             const { artifacts } = (0, take_input_1.getArtifactInputs)(artifactsToBeFetched);
+            console.log({ artifacts });
             // Populate SHA in input
             const artifactsValueWithSha = yield (0, values_from_variables_1.getAllArtifactValues)(artifacts);
             // Add file diff to each Object
