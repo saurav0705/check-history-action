@@ -2,27 +2,49 @@ require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 7263:
-/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.artifact = void 0;
 const artifact_1 = __nccwpck_require__(2605);
 const utils_1 = __nccwpck_require__(918);
-class Artifact {
+const artifacts_1 = __nccwpck_require__(5734);
+const client_1 = __nccwpck_require__(1495);
+class ArtifactHandler {
     constructor() {
         this.client = (0, artifact_1.create)();
     }
     setClient(client) {
         this.client = client;
     }
+    generateArtifactName(name) {
+        return `check-action-history-${client_1.github.CONFIG.owner}-${client_1.github.CONFIG.repo}-${name}-${client_1.github.CONFIG.issue_number}`;
+    }
     uploadArtifact(name, value) {
-        (0, utils_1.createFile)(`${name}.txt`, value);
-        this.client.uploadArtifact(name, [`${name}.txt`], '.', {});
+        return __awaiter(this, void 0, void 0, function* () {
+            const ARTIFACT_NAME = this.generateArtifactName(name);
+            // Get All Artifacts by Old Name
+            const artifacts = yield (0, artifacts_1.getArtifactsByName)(`${ARTIFACT_NAME}.txt`);
+            // Delete All Old Artifacts By Same Name
+            yield (0, artifacts_1.deleteArtifacts)(artifacts);
+            // Upload New Artifact
+            (0, utils_1.createFile)(`${ARTIFACT_NAME}.txt`, value);
+            this.client.uploadArtifact(ARTIFACT_NAME, [`${ARTIFACT_NAME}.txt`], '.', {});
+        });
     }
 }
-exports.artifact = new Artifact();
+exports.artifact = new ArtifactHandler();
 
 
 /***/ }),
@@ -76,6 +98,49 @@ const getFileDiffForAllArtifacts = (artifacts) => __awaiter(void 0, void 0, void
     return resp;
 });
 exports.getFileDiffForAllArtifacts = getFileDiffForAllArtifacts;
+
+
+/***/ }),
+
+/***/ 5734:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.deleteArtifacts = exports.getArtifactsByName = void 0;
+const client_1 = __nccwpck_require__(1495);
+const getArtifactsByName = (artifactName) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const data = yield client_1.github.client.rest.actions.listArtifactsForRepo(Object.assign(Object.assign({}, client_1.github.CONFIG), { name: artifactName }));
+        return data.data.artifacts.map(art => art.id);
+    }
+    catch (e) {
+        console.error(`Failed to fetch list of artifacts`, e);
+        return [];
+    }
+});
+exports.getArtifactsByName = getArtifactsByName;
+const deleteArtifacts = (artifactIds) => __awaiter(void 0, void 0, void 0, function* () {
+    for (const artifact of artifactIds) {
+        try {
+            yield client_1.github.client.rest.actions.deleteArtifact(Object.assign(Object.assign({}, client_1.github.CONFIG), { artifact_id: artifact }));
+        }
+        catch (e) {
+            console.error(`unable to delete artifact with id :: ${artifact}`, e);
+        }
+    }
+});
+exports.deleteArtifacts = deleteArtifacts;
 
 
 /***/ }),
@@ -263,7 +328,7 @@ function run() {
             });
             if (UPLOAD_KEY) {
                 // setArtifactValueVariable(`${UPLOAD_KEY}-${github.CONFIG.issue_number}`)
-                artifact_1.artifact.uploadArtifact(`${UPLOAD_KEY}-${client_1.github.CONFIG.issue_number}`, client_1.github.CONFIG.sha);
+                yield artifact_1.artifact.uploadArtifact(UPLOAD_KEY, client_1.github.CONFIG.sha);
                 return;
             }
             const artifactsToBeFetched = (0, core_1.getInput)(ARTIFACTS);
@@ -283,8 +348,7 @@ function run() {
             }
         }
         catch (e) {
-            console.log(e);
-            console.error(`Error while executing action ::  ${e}`);
+            console.error(`Error while executing action :: `, e);
             (0, core_1.setFailed)(e.message);
         }
     });
