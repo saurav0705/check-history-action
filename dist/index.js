@@ -340,7 +340,7 @@ function run() {
                 return;
             }
             if (DOWNLOAD_KEY) {
-                yield artifact_1.artifact.downloadArtifact(UPLOAD_KEY);
+                yield artifact_1.artifact.downloadArtifact(DOWNLOAD_KEY);
                 return;
             }
             const artifactsToBeFetched = (0, core_1.getInput)(ARTIFACTS);
