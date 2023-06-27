@@ -9,7 +9,7 @@ export const setGithubVariable = async <T extends {}>(
       `Setting Variable with ${name} with value ${JSON.stringify(value)}`
     )
     await github.client.rest.actions.updateRepoVariable({
-      ...github.CONFIG,
+      ...github.getRequestConfig(),
       name,
       value: JSON.stringify(value)
     })
@@ -25,7 +25,7 @@ export const getGithubVariable = async (name: string): Promise<string> => {
   try {
     console.log(`Getting Variable Value with ${name}`)
     const data = await github.client.rest.actions.getRepoVariable({
-      ...github.CONFIG,
+      ...github.getRequestConfig(),
       name
     })
     return data.data.value

@@ -38,6 +38,7 @@ Ensure that you have these dependencies installed or included in your workflow e
           GIT_TOKEN: ${{secrets.GIT_SECRET}}
           # if UPLOAD_KEYS is present KEYS will be ignored
           UPLOAD_KEY: JOB_NAME_1
+          ARTIFACT_RETENTION_DAYS: '30' #default it is set to 30
 ```
 
 ### `GIT_TOKEN` (required)
@@ -49,6 +50,15 @@ This is the key in which we mention the workflow name and pattern that we want t
 
 ### `UPLOAD_KEY` (required)
 This is required when you want to update on successfull run of a job.
+
+### `DISABLE_CHECK` 
+This is used if you want to disable check then all the keys that are provided will have shouldRun as `true`.
+
+### `DISABLE_PR_COMMENT` 
+This is used if you want to disable pr comment if this is truned as `true` this action will not post the comment.
+
+### `ARTIFACT_RETENTION_DAYS` 
+This is used to set artifact retention days while logging a successful run and will be consumed when `UPLOAD_KEYS` is given.
 
 ## Outputs
 
@@ -142,10 +152,11 @@ jobs:
       with:
           GIT_TOKEN: ${{secrets.GIT_SECRET}}
           UPLOAD_KEY: JOB_NAME
+          ARTIFACT_RETENTION_DAYS: '30'
 
 ```
 
 
 ## Support
 
-For any questions or issues regarding this GitHub Action, please open an issue in the repository where the action is hosted.
+For any questions or issues regarding this GitHub Action, please open an issue in the repository.

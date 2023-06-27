@@ -24,9 +24,13 @@ const client_1 = __nccwpck_require__(1495);
 class ArtifactHandler {
     constructor() {
         this.client = (0, artifact_1.create)();
+        this.retentionDays = 30;
     }
     setClient(client) {
         this.client = client;
+    }
+    setRetentionDays(days) {
+        this.retentionDays = days;
     }
     generateArtifactName(name) {
         return `check-action-history-${client_1.github.CONFIG.owner}-${client_1.github.CONFIG.repo}-${name}-${client_1.github.CONFIG.issue_number}`;
@@ -35,12 +39,14 @@ class ArtifactHandler {
         return __awaiter(this, void 0, void 0, function* () {
             const ARTIFACT_NAME = this.generateArtifactName(name);
             // Get All Artifacts by Old Name
-            const artifacts = yield (0, artifacts_1.getArtifactsByName)(`${ARTIFACT_NAME}.txt`);
+            const artifacts = yield (0, artifacts_1.getArtifactsByName)(ARTIFACT_NAME);
             // Delete All Old Artifacts By Same Name
             yield (0, artifacts_1.deleteArtifacts)(artifacts);
             // Upload New Artifact
             (0, utils_1.convertStringToFile)(`${ARTIFACT_NAME}.txt`, value);
-            this.client.uploadArtifact(ARTIFACT_NAME, [`${ARTIFACT_NAME}.txt`], '.', {});
+            this.client.uploadArtifact(ARTIFACT_NAME, [`${ARTIFACT_NAME}.txt`], '.', {
+                retentionDays: this.retentionDays
+            });
         });
     }
     downloadArtifact(name) {
@@ -139,8 +145,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.downloadArtifact = exports.deleteArtifacts = exports.getArtifactsByName = void 0;
 const client_1 = __nccwpck_require__(1495);
 const getArtifactsByName = (artifactName) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('Fetching Artifacts By Name ', artifactName);
     try {
-        const data = yield client_1.github.client.rest.actions.listArtifactsForRepo(Object.assign(Object.assign({}, client_1.github.CONFIG), { name: artifactName }));
+        const data = yield client_1.github.client.rest.actions.listArtifactsForRepo(Object.assign(Object.assign({}, client_1.github.getRequestConfig()), { name: artifactName }));
         return data.data.artifacts.map(art => art.id);
     }
     catch (e) {
@@ -152,7 +159,7 @@ exports.getArtifactsByName = getArtifactsByName;
 const deleteArtifacts = (artifactIds) => __awaiter(void 0, void 0, void 0, function* () {
     for (const artifact of artifactIds) {
         try {
-            yield client_1.github.client.rest.actions.deleteArtifact(Object.assign(Object.assign({}, client_1.github.CONFIG), { artifact_id: artifact }));
+            yield client_1.github.client.rest.actions.deleteArtifact(Object.assign(Object.assign({}, client_1.github.getRequestConfig()), { artifact_id: artifact }));
         }
         catch (e) {
             console.error(`unable to delete artifact with id :: ${artifact}`, e);
@@ -164,8 +171,11 @@ const downloadArtifact = (artifactName) => __awaiter(void 0, void 0, void 0, fun
     console.log('download called  ', artifactName);
     try {
         const artifactId = yield (0, exports.getArtifactsByName)(artifactName);
-        const resp = yield client_1.github.client.rest.actions.downloadArtifact(Object.assign(Object.assign({}, client_1.github.CONFIG), { artifact_id: artifactId[0], archive_format: 'zip' }));
-        return resp.data;
+        if (artifactId.length) {
+            const resp = yield client_1.github.client.rest.actions.downloadArtifact(Object.assign(Object.assign({}, client_1.github.getRequestConfig()), { artifact_id: artifactId[0], archive_format: 'zip' }));
+            return resp.data;
+        }
+        throw new Error('no artifact found');
     }
     catch (e) {
         console.error(`Error in downloading an artifact ${artifactName}`, e);
@@ -206,6 +216,12 @@ class GithubClient {
     getToken() {
         return this.token;
     }
+    getRequestConfig() {
+        return {
+            owner: this.CONFIG.owner,
+            repo: this.CONFIG.repo
+        };
+    }
 }
 exports.github = new GithubClient();
 
@@ -232,8 +248,8 @@ const client_1 = __nccwpck_require__(1495);
 const getFileDiffFromGithub = ({ base, head }) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     console.log(`fetching file diff for ${base} ${head}`);
-    const resp = yield client_1.github.client.rest.repos.compareCommits(Object.assign({ base,
-        head }, client_1.github.CONFIG));
+    const resp = yield client_1.github.client.rest.repos.compareCommits(Object.assign(Object.assign({}, client_1.github.getRequestConfig()), { base,
+        head }));
     return {
         files: (_b = (_a = resp.data.files) === null || _a === void 0 ? void 0 : _a.map(item => item.filename)) !== null && _b !== void 0 ? _b : [],
         url: resp.data.html_url
@@ -244,7 +260,7 @@ exports.getFileDiffFromGithub = getFileDiffFromGithub;
 
 /***/ }),
 
-/***/ 1529:
+/***/ 9026:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -259,17 +275,28 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.postCommentOnPR = void 0;
+exports.deleteCommentOnPR = exports.postCommentOnPR = void 0;
 const client_1 = __nccwpck_require__(1495);
 const postCommentOnPR = (body) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield client_1.github.client.rest.issues.createComment(Object.assign(Object.assign({}, client_1.github.CONFIG), { body }));
+        const data = yield client_1.github.client.rest.issues.createComment(Object.assign(Object.assign({}, client_1.github.getRequestConfig()), { issue_number: client_1.github.CONFIG.issue_number, body }));
+        return { commentId: data.data.id };
     }
     catch (e) {
-        console.error(`Error while posting comment on PR : ${e}`);
+        console.error(`Error while posting comment on PR : `, e);
+        return { commentId: null };
     }
 });
 exports.postCommentOnPR = postCommentOnPR;
+const deleteCommentOnPR = (commentId) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        yield client_1.github.client.rest.issues.deleteComment(Object.assign(Object.assign({}, client_1.github.getRequestConfig()), { comment_id: commentId }));
+    }
+    catch (e) {
+        console.error(`Error while posting comment on PR : `, e);
+    }
+});
+exports.deleteCommentOnPR = deleteCommentOnPR;
 
 
 /***/ }),
@@ -303,8 +330,15 @@ function run() {
     var _a, _b, _c, _d;
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            const setOutputResponse = (response) => {
+                for (const resp of response) {
+                    (0, core_1.setOutput)(resp.suppliedKey, resp);
+                }
+            };
             const GIT_TOKEN = (0, core_1.getInput)('GIT_TOKEN');
             const UPLOAD_KEY = (0, core_1.getInput)('UPLOAD_KEY');
+            const DISABLE_PR_COMMENT = (0, core_1.getInput)('DISABLE_PR_COMMENT') === 'true';
+            const DISABLE_CHECK = (0, core_1.getInput)('DISABLE_CHECK') === 'true';
             client_1.github.setClient(GIT_TOKEN);
             client_1.github.setConfig({
                 repo: (_a = github_1.context.repo.repo) !== null && _a !== void 0 ? _a : '',
@@ -313,24 +347,33 @@ function run() {
                 sha: (_d = github_1.context.payload.after) !== null && _d !== void 0 ? _d : ''
             });
             if (UPLOAD_KEY) {
+                const ARTIFACT_RETENTION_DAYS = (0, core_1.getInput)('ARTIFACT_RETENTION_DAYS')
+                    ? parseInt((0, core_1.getInput)('RETENTION_DAYS'), 10)
+                    : 90;
+                artifact_1.artifact.setRetentionDays(ARTIFACT_RETENTION_DAYS);
                 yield artifact_1.artifact.uploadArtifact(UPLOAD_KEY, client_1.github.CONFIG.sha);
                 return;
             }
             const artifactsToBeFetched = (0, core_1.getInput)(ARTIFACTS);
             // Get Input from action
             const { artifacts } = (0, take_input_1.getArtifactInputs)(artifactsToBeFetched);
+            //If Check is disabled it should return this
+            if (DISABLE_CHECK) {
+                setOutputResponse(artifacts.map(item => (Object.assign(Object.assign({}, item), { sha: '', shouldRun: true, diffFiles: [], diffUrl: '' }))));
+                return;
+            }
             // Populate SHA in input
             const artifactsValueWithSha = yield (0, values_from_variables_1.getAllArtifactValues)(artifacts);
             // Add file diff to each Object
             const artifactValueWithShaAndFileDiff = yield (0, get_diff_files_1.getFileDiffForAllArtifacts)(artifactsValueWithSha);
             // Complete Response for action
             const artifactValueWithShaAndFileDiffWithShouldRunStatus = (0, regex_match_for_files_1.matchFileForResponse)(artifactValueWithShaAndFileDiff);
-            // post a message summary of action
-            yield (0, post_comment_on_pr_1.postCommentOnPrWithDetails)(artifactValueWithShaAndFileDiffWithShouldRunStatus);
-            // set output
-            for (const resp of artifactValueWithShaAndFileDiffWithShouldRunStatus) {
-                (0, core_1.setOutput)(resp.suppliedKey, resp);
+            // post a message summary of action if not disabled
+            if (!DISABLE_PR_COMMENT) {
+                yield (0, post_comment_on_pr_1.postCommentOnPrWithDetails)(artifactValueWithShaAndFileDiffWithShouldRunStatus);
             }
+            // set output
+            setOutputResponse(artifactValueWithShaAndFileDiffWithShouldRunStatus);
         }
         catch (e) {
             console.error(`Error while executing action :: `, e);
@@ -359,12 +402,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.postCommentOnPrWithDetails = void 0;
-const post_comment_on_pr_1 = __nccwpck_require__(1529);
+const artifact_1 = __nccwpck_require__(7917);
+const client_1 = __nccwpck_require__(1495);
+const post_comments_1 = __nccwpck_require__(9026);
+const generateCommitRunUrl = (sha) => {
+    if (!sha) {
+        return `https://github.com/${client_1.github.CONFIG.owner}/${client_1.github.CONFIG.repo}/pull/${client_1.github.CONFIG.issue_number}/checks`;
+    }
+    return `https://github.com/${client_1.github.CONFIG.owner}/${client_1.github.CONFIG.repo}/pull/${client_1.github.CONFIG.issue_number}/checks?sha=${sha}`;
+};
 const makeSummaryForItem = (item) => {
     var _a, _b;
     return `<details>
   <summary><h3>${item.suppliedKey}<code>${item.shouldRun}</code></h3></summary>\n
-  - Last Successfull Run Commit: \`${item.sha}\`\n
+  - Last Successfull Run Commit: [${item.sha}](${generateCommitRunUrl(item.sha)})\n
   - Pattern: \`${item.filesRegex}\`\n
   - Status: \`${item.shouldRun}\`\n
   ${item.diffUrl ? `- Diff Url: ${item.diffUrl}` : ''}
@@ -373,11 +424,25 @@ const makeSummaryForItem = (item) => {
 
 </details>`;
 };
+const deleteOldComment = () => __awaiter(void 0, void 0, void 0, function* () {
+    const commentId = yield artifact_1.artifact.downloadArtifact('pr-comment');
+    if (commentId) {
+        (0, post_comments_1.deleteCommentOnPR)(parseInt(commentId, 10));
+    }
+});
+const createNewComment = (body) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
+    const data = yield (0, post_comments_1.postCommentOnPR)(body);
+    if (data) {
+        artifact_1.artifact.uploadArtifact('pr-comment', (_b = (_a = data.commentId) === null || _a === void 0 ? void 0 : _a.toString()) !== null && _b !== void 0 ? _b : '');
+    }
+});
 const postCommentOnPrWithDetails = (artifacts) => __awaiter(void 0, void 0, void 0, function* () {
     const body = `# History Action Summary\n${artifacts
         .map(makeSummaryForItem)
         .join('\n')}`;
-    yield (0, post_comment_on_pr_1.postCommentOnPR)(body);
+    yield deleteOldComment();
+    yield createNewComment(body);
 });
 exports.postCommentOnPrWithDetails = postCommentOnPrWithDetails;
 
