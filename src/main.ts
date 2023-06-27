@@ -3,7 +3,10 @@ import {context} from '@actions/github'
 
 import {getAllArtifactValues} from './values-from-variables'
 import {getFileDiffForAllArtifacts} from './get-diff-files'
-import {matchFileForResponse} from './regex-match-for-files'
+import {
+  ArtifactFinalResponseStatus,
+  matchFileForResponse
+} from './regex-match-for-files'
 import {getArtifactInputs} from './take-input'
 import {postCommentOnPrWithDetails} from './post-comment-on-pr'
 
@@ -13,8 +16,18 @@ import {artifact} from './artifact'
 const ARTIFACTS = 'KEYS'
 async function run(): Promise<void> {
   try {
+    const setOutputResponse = (
+      response: ArtifactFinalResponseStatus[]
+    ): void => {
+      for (const resp of response) {
+        setOutput(resp.suppliedKey, resp)
+      }
+    }
+
     const GIT_TOKEN = getInput('GIT_TOKEN')
     const UPLOAD_KEY = getInput('UPLOAD_KEY')
+    const DISABLE_PR_COMMENT = getInput('DISABLE_PR_COMMENT') === 'true'
+    const DISABLE_CHECK = getInput('DISABLE_CHECK') === 'true'
 
     github.setClient(GIT_TOKEN)
     github.setConfig({
@@ -32,6 +45,21 @@ async function run(): Promise<void> {
     const artifactsToBeFetched = getInput(ARTIFACTS)
     // Get Input from action
     const {artifacts} = getArtifactInputs(artifactsToBeFetched)
+
+    //If Check is disabled it should return this
+    if (DISABLE_CHECK) {
+      setOutputResponse(
+        artifacts.map(item => ({
+          ...item,
+          sha: '',
+          shouldRun: true,
+          diffFiles: [],
+          diffUrl: ''
+        }))
+      )
+      return
+    }
+
     // Populate SHA in input
     const artifactsValueWithSha = await getAllArtifactValues(artifacts)
 
@@ -44,15 +72,15 @@ async function run(): Promise<void> {
     const artifactValueWithShaAndFileDiffWithShouldRunStatus =
       matchFileForResponse(artifactValueWithShaAndFileDiff)
 
-    // post a message summary of action
-    await postCommentOnPrWithDetails(
-      artifactValueWithShaAndFileDiffWithShouldRunStatus
-    )
+    // post a message summary of action if not disabled
+    if (!DISABLE_PR_COMMENT) {
+      await postCommentOnPrWithDetails(
+        artifactValueWithShaAndFileDiffWithShouldRunStatus
+      )
+    }
 
     // set output
-    for (const resp of artifactValueWithShaAndFileDiffWithShouldRunStatus) {
-      setOutput(resp.suppliedKey, resp)
-    }
+    setOutputResponse(artifactValueWithShaAndFileDiffWithShouldRunStatus)
   } catch (e) {
     console.error(`Error while executing action :: `, e)
     setFailed((e as Error).message)

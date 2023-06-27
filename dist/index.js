@@ -24,9 +24,13 @@ const client_1 = __nccwpck_require__(1495);
 class ArtifactHandler {
     constructor() {
         this.client = (0, artifact_1.create)();
+        this.retentionDays = 90;
     }
     setClient(client) {
         this.client = client;
+    }
+    setRetentionDays(days) {
+        this.retentionDays = days;
     }
     generateArtifactName(name) {
         return `check-action-history-${client_1.github.CONFIG.owner}-${client_1.github.CONFIG.repo}-${name}-${client_1.github.CONFIG.issue_number}`;
@@ -40,7 +44,9 @@ class ArtifactHandler {
             yield (0, artifacts_1.deleteArtifacts)(artifacts);
             // Upload New Artifact
             (0, utils_1.convertStringToFile)(`${ARTIFACT_NAME}.txt`, value);
-            this.client.uploadArtifact(ARTIFACT_NAME, [`${ARTIFACT_NAME}.txt`], '.', {});
+            this.client.uploadArtifact(ARTIFACT_NAME, [`${ARTIFACT_NAME}.txt`], '.', {
+                retentionDays: this.retentionDays
+            });
         });
     }
     downloadArtifact(name) {
@@ -259,17 +265,28 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.postCommentOnPR = void 0;
+exports.deleteCommentOnPR = exports.postCommentOnPR = void 0;
 const client_1 = __nccwpck_require__(1495);
 const postCommentOnPR = (body) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield client_1.github.client.rest.issues.createComment(Object.assign(Object.assign({}, client_1.github.CONFIG), { body }));
+        const data = yield client_1.github.client.rest.issues.createComment(Object.assign(Object.assign({}, client_1.github.CONFIG), { body }));
+        return { commentId: data.data.id };
     }
     catch (e) {
-        console.error(`Error while posting comment on PR : ${e}`);
+        console.error(`Error while posting comment on PR : `, e);
+        return { commentId: null };
     }
 });
 exports.postCommentOnPR = postCommentOnPR;
+const deleteCommentOnPR = (commentId) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        yield client_1.github.client.rest.issues.deleteComment(Object.assign(Object.assign({}, client_1.github.CONFIG), { comment_id: commentId }));
+    }
+    catch (e) {
+        console.error(`Error while posting comment on PR : `, e);
+    }
+});
+exports.deleteCommentOnPR = deleteCommentOnPR;
 
 
 /***/ }),
@@ -303,8 +320,15 @@ function run() {
     var _a, _b, _c, _d;
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            const setOutputResponse = (response) => {
+                for (const resp of response) {
+                    (0, core_1.setOutput)(resp.suppliedKey, resp);
+                }
+            };
             const GIT_TOKEN = (0, core_1.getInput)('GIT_TOKEN');
             const UPLOAD_KEY = (0, core_1.getInput)('UPLOAD_KEY');
+            const DISABLE_PR_COMMENT = (0, core_1.getInput)('DISABLE_PR_COMMENT') === 'true';
+            const DISABLE_CHECK = (0, core_1.getInput)('DISABLE_CHECK') === 'true';
             client_1.github.setClient(GIT_TOKEN);
             client_1.github.setConfig({
                 repo: (_a = github_1.context.repo.repo) !== null && _a !== void 0 ? _a : '',
@@ -319,18 +343,23 @@ function run() {
             const artifactsToBeFetched = (0, core_1.getInput)(ARTIFACTS);
             // Get Input from action
             const { artifacts } = (0, take_input_1.getArtifactInputs)(artifactsToBeFetched);
+            //If Check is disabled it should return this
+            if (DISABLE_CHECK) {
+                setOutputResponse(artifacts.map(item => (Object.assign(Object.assign({}, item), { sha: '', shouldRun: true, diffFiles: [], diffUrl: '' }))));
+                return;
+            }
             // Populate SHA in input
             const artifactsValueWithSha = yield (0, values_from_variables_1.getAllArtifactValues)(artifacts);
             // Add file diff to each Object
             const artifactValueWithShaAndFileDiff = yield (0, get_diff_files_1.getFileDiffForAllArtifacts)(artifactsValueWithSha);
             // Complete Response for action
             const artifactValueWithShaAndFileDiffWithShouldRunStatus = (0, regex_match_for_files_1.matchFileForResponse)(artifactValueWithShaAndFileDiff);
-            // post a message summary of action
-            yield (0, post_comment_on_pr_1.postCommentOnPrWithDetails)(artifactValueWithShaAndFileDiffWithShouldRunStatus);
-            // set output
-            for (const resp of artifactValueWithShaAndFileDiffWithShouldRunStatus) {
-                (0, core_1.setOutput)(resp.suppliedKey, resp);
+            // post a message summary of action if not disabled
+            if (!DISABLE_PR_COMMENT) {
+                yield (0, post_comment_on_pr_1.postCommentOnPrWithDetails)(artifactValueWithShaAndFileDiffWithShouldRunStatus);
             }
+            // set output
+            setOutputResponse(artifactValueWithShaAndFileDiffWithShouldRunStatus);
         }
         catch (e) {
             console.error(`Error while executing action :: `, e);
@@ -359,6 +388,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.postCommentOnPrWithDetails = void 0;
+const artifact_1 = __nccwpck_require__(7917);
 const post_comment_on_pr_1 = __nccwpck_require__(1529);
 const makeSummaryForItem = (item) => {
     var _a, _b;
@@ -373,11 +403,24 @@ const makeSummaryForItem = (item) => {
 
 </details>`;
 };
+const deleteOldComment = () => __awaiter(void 0, void 0, void 0, function* () {
+    const commentId = yield artifact_1.artifact.downloadArtifact('pr-comment');
+    if (commentId) {
+        (0, post_comment_on_pr_1.deleteCommentOnPR)(parseInt(commentId, 10));
+    }
+});
+const createNewComment = (body) => __awaiter(void 0, void 0, void 0, function* () {
+    const data = yield (0, post_comment_on_pr_1.postCommentOnPR)(body);
+    if (data) {
+        artifact_1.artifact.uploadArtifact('pr-comment', data.toString());
+    }
+});
 const postCommentOnPrWithDetails = (artifacts) => __awaiter(void 0, void 0, void 0, function* () {
     const body = `# History Action Summary\n${artifacts
         .map(makeSummaryForItem)
         .join('\n')}`;
-    yield (0, post_comment_on_pr_1.postCommentOnPR)(body);
+    yield deleteOldComment();
+    yield createNewComment(body);
 });
 exports.postCommentOnPrWithDetails = postCommentOnPrWithDetails;
 

@@ -1,4 +1,5 @@
-import {postCommentOnPR} from './github/post-comment-on-pr'
+import {artifact} from './artifact'
+import {deleteCommentOnPR, postCommentOnPR} from './github/post-comment-on-pr'
 import {ArtifactFinalResponseStatus} from './regex-match-for-files'
 
 const makeSummaryForItem = (item: ArtifactFinalResponseStatus): string => {
@@ -16,11 +17,26 @@ const makeSummaryForItem = (item: ArtifactFinalResponseStatus): string => {
 </details>`
 }
 
+const deleteOldComment = async (): Promise<void> => {
+  const commentId = await artifact.downloadArtifact('pr-comment')
+  if (commentId) {
+    deleteCommentOnPR(parseInt(commentId, 10))
+  }
+}
+
+const createNewComment = async (body: string): Promise<void> => {
+  const data = await postCommentOnPR(body)
+  if (data) {
+    artifact.uploadArtifact('pr-comment', data.toString())
+  }
+}
+
 export const postCommentOnPrWithDetails = async (
   artifacts: ArtifactFinalResponseStatus[]
 ): Promise<void> => {
   const body = `# History Action Summary\n${artifacts
     .map(makeSummaryForItem)
     .join('\n')}`
-  await postCommentOnPR(body)
+  await deleteOldComment()
+  await createNewComment(body)
 }

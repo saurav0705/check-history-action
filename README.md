@@ -50,6 +50,12 @@ This is the key in which we mention the workflow name and pattern that we want t
 ### `UPLOAD_KEY` (required)
 This is required when you want to update on successfull run of a job.
 
+### `DISABLE_CHECK` 
+This is used if you want to disable check then all the keys that are provided will have shouldRun as `true`.
+
+### `DISABLE_PR_COMMENT` 
+This is used if you want to disable pr comment if this is truned as `true` this action will not post the comment.
+
 ## Outputs
 
 This Return a `status` object in which the following are present

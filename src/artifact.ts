@@ -14,9 +14,14 @@ import {github} from './github/client'
 
 class ArtifactHandler {
   client = create()
+  retentionDays = 90
 
   setClient(client: ArtifactClient): void {
     this.client = client
+  }
+
+  setRetentionDays(days: number): void {
+    this.retentionDays = days
   }
 
   private generateArtifactName(name: string): string {
@@ -33,7 +38,9 @@ class ArtifactHandler {
 
     // Upload New Artifact
     convertStringToFile(`${ARTIFACT_NAME}.txt`, value)
-    this.client.uploadArtifact(ARTIFACT_NAME, [`${ARTIFACT_NAME}.txt`], '.', {})
+    this.client.uploadArtifact(ARTIFACT_NAME, [`${ARTIFACT_NAME}.txt`], '.', {
+      retentionDays: this.retentionDays
+    })
   }
 
   async downloadArtifact(name: string): Promise<string | null> {
