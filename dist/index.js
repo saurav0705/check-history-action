@@ -145,8 +145,14 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.downloadArtifact = exports.deleteArtifacts = exports.getArtifactsByName = void 0;
 const client_1 = __nccwpck_require__(1495);
 const getArtifactsByName = (artifactName) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('Fetching Artifacts By Name ', artifactName);
     try {
-        const data = yield client_1.github.client.rest.actions.listArtifactsForRepo(Object.assign(Object.assign({}, client_1.github.CONFIG), { name: artifactName }));
+        const data = yield client_1.github.client.rest.actions.listArtifactsForRepo({
+            owner: client_1.github.CONFIG.owner,
+            repo: client_1.github.CONFIG.repo,
+            name: artifactName
+        });
+        console.log(JSON.stringify(data, null, 2));
         return data.data.artifacts.map(art => art.id);
     }
     catch (e) {
@@ -170,8 +176,16 @@ const downloadArtifact = (artifactName) => __awaiter(void 0, void 0, void 0, fun
     console.log('download called  ', artifactName);
     try {
         const artifactId = yield (0, exports.getArtifactsByName)(artifactName);
-        const resp = yield client_1.github.client.rest.actions.downloadArtifact(Object.assign(Object.assign({}, client_1.github.CONFIG), { artifact_id: artifactId[0], archive_format: 'zip' }));
-        return resp.data;
+        if (artifactId.length) {
+            const resp = yield client_1.github.client.rest.actions.downloadArtifact({
+                owner: client_1.github.CONFIG.owner,
+                repo: client_1.github.CONFIG.repo,
+                artifact_id: artifactId[0],
+                archive_format: 'zip'
+            });
+            return resp.data;
+        }
+        throw new Error('no artifact found');
     }
     catch (e) {
         console.error(`Error in downloading an artifact ${artifactName}`, e);
