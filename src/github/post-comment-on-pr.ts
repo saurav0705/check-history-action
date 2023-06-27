@@ -5,7 +5,8 @@ export const postCommentOnPR = async (
 ): Promise<{commentId: null | number}> => {
   try {
     const data = await github.client.rest.issues.createComment({
-      ...github.CONFIG,
+      ...github.getRequestConfig(),
+      issue_number: github.CONFIG.issue_number,
       body
     })
     return {commentId: data.data.id}
@@ -18,8 +19,7 @@ export const postCommentOnPR = async (
 export const deleteCommentOnPR = async (commentId: number): Promise<void> => {
   try {
     await github.client.rest.issues.deleteComment({
-      owner: github.CONFIG.owner,
-      repo: github.CONFIG.repo,
+      ...github.getRequestConfig(),
       comment_id: commentId
     })
   } catch (e) {

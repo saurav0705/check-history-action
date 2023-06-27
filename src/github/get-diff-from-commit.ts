@@ -16,9 +16,9 @@ export const getFileDiffFromGithub = async ({
 }: DiffFilesType): Promise<ReturnTypeOfDiffFiles> => {
   console.log(`fetching file diff for ${base} ${head}`)
   const resp = await github.client.rest.repos.compareCommits({
+    ...github.getRequestConfig(),
     base,
-    head,
-    ...github.CONFIG
+    head
   })
 
   return {

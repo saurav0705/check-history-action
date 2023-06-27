@@ -29,6 +29,13 @@ class GithubClient {
   getToken(): string {
     return this.token
   }
+
+  getRequestConfig(): {owner: string; repo: string} {
+    return {
+      owner: this.CONFIG.owner,
+      repo: this.CONFIG.repo
+    }
+  }
 }
 
 export const github = new GithubClient()

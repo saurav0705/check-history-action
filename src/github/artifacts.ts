@@ -6,8 +6,7 @@ export const getArtifactsByName = async (
   console.log('Fetching Artifacts By Name ', artifactName)
   try {
     const data = await github.client.rest.actions.listArtifactsForRepo({
-      owner: github.CONFIG.owner,
-      repo: github.CONFIG.repo,
+      ...github.getRequestConfig(),
       name: artifactName
     })
 
@@ -23,7 +22,7 @@ export const deleteArtifacts = async (artifactIds: number[]): Promise<void> => {
   for (const artifact of artifactIds) {
     try {
       await github.client.rest.actions.deleteArtifact({
-        ...github.CONFIG,
+        ...github.getRequestConfig(),
         artifact_id: artifact
       })
     } catch (e) {
@@ -40,8 +39,7 @@ export const downloadArtifact = async (
     const artifactId = await getArtifactsByName(artifactName)
     if (artifactId.length) {
       const resp = await github.client.rest.actions.downloadArtifact({
-        owner: github.CONFIG.owner,
-        repo: github.CONFIG.repo,
+        ...github.getRequestConfig(),
         artifact_id: artifactId[0],
         archive_format: 'zip'
       })
