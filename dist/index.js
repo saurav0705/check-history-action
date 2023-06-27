@@ -150,7 +150,7 @@ const getArtifactsByName = (artifactName) => __awaiter(void 0, void 0, void 0, f
         const data = yield client_1.github.client.rest.actions.listArtifactsForRepo({
             owner: client_1.github.CONFIG.owner,
             repo: client_1.github.CONFIG.repo,
-            name: artifactName,
+            name: artifactName
         });
         console.log(JSON.stringify(data, null, 2));
         return data.data.artifacts.map(art => art.id);
@@ -294,7 +294,11 @@ const postCommentOnPR = (body) => __awaiter(void 0, void 0, void 0, function* ()
 exports.postCommentOnPR = postCommentOnPR;
 const deleteCommentOnPR = (commentId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield client_1.github.client.rest.issues.deleteComment(Object.assign(Object.assign({}, client_1.github.CONFIG), { comment_id: commentId }));
+        yield client_1.github.client.rest.issues.deleteComment({
+            owner: client_1.github.CONFIG.owner,
+            repo: client_1.github.CONFIG.repo,
+            comment_id: commentId
+        });
     }
     catch (e) {
         console.error(`Error while posting comment on PR : `, e);

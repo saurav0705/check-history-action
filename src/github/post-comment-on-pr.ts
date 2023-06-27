@@ -18,7 +18,8 @@ export const postCommentOnPR = async (
 export const deleteCommentOnPR = async (commentId: number): Promise<void> => {
   try {
     await github.client.rest.issues.deleteComment({
-      ...github.CONFIG,
+      owner: github.CONFIG.owner,
+      repo: github.CONFIG.repo,
       comment_id: commentId
     })
   } catch (e) {
