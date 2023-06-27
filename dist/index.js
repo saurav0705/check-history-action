@@ -430,9 +430,10 @@ const deleteOldComment = () => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 const createNewComment = (body) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     const data = yield (0, post_comment_on_pr_1.postCommentOnPR)(body);
     if (data) {
-        artifact_1.artifact.uploadArtifact('pr-comment', data.toString());
+        artifact_1.artifact.uploadArtifact('pr-comment', (_b = (_a = data.commentId) === null || _a === void 0 ? void 0 : _a.toString()) !== null && _b !== void 0 ? _b : '');
     }
 });
 const postCommentOnPrWithDetails = (artifacts) => __awaiter(void 0, void 0, void 0, function* () {

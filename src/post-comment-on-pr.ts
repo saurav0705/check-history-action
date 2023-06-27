@@ -38,7 +38,7 @@ const deleteOldComment = async (): Promise<void> => {
 const createNewComment = async (body: string): Promise<void> => {
   const data = await postCommentOnPR(body)
   if (data) {
-    artifact.uploadArtifact('pr-comment', data.toString())
+    artifact.uploadArtifact('pr-comment', data.commentId?.toString() ?? '')
   }
 }
 
