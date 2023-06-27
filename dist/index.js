@@ -281,6 +281,7 @@ const client_1 = __nccwpck_require__(1495);
 const postCommentOnPR = (body) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield client_1.github.client.rest.issues.createComment(Object.assign(Object.assign({}, client_1.github.getRequestConfig()), { issue_number: client_1.github.CONFIG.issue_number, body }));
+        console.log(JSON.stringify(data, null, 2));
         return { commentId: data.data.id };
     }
     catch (e) {
@@ -423,6 +424,7 @@ const makeSummaryForItem = (item) => {
 };
 const deleteOldComment = () => __awaiter(void 0, void 0, void 0, function* () {
     const commentId = yield artifact_1.artifact.downloadArtifact('pr-comment');
+    console.log({ commentId });
     if (commentId) {
         (0, post_comment_on_pr_1.deleteCommentOnPR)(parseInt(commentId, 10));
     }

@@ -29,6 +29,7 @@ const makeSummaryForItem = (item: ArtifactFinalResponseStatus): string => {
 
 const deleteOldComment = async (): Promise<void> => {
   const commentId = await artifact.downloadArtifact('pr-comment')
+  console.log({commentId})
   if (commentId) {
     deleteCommentOnPR(parseInt(commentId, 10))
   }
