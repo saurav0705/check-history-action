@@ -31,7 +31,7 @@ class ArtifactHandler {
   async uploadArtifact(name: string, value: string): Promise<void> {
     const ARTIFACT_NAME = this.generateArtifactName(name)
     // Get All Artifacts by Old Name
-    const artifacts = await getArtifactsByName(`${ARTIFACT_NAME}.txt`)
+    const artifacts = await getArtifactsByName(ARTIFACT_NAME)
 
     // Delete All Old Artifacts By Same Name
     await deleteArtifacts(artifacts)

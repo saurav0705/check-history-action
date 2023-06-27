@@ -8,7 +8,7 @@ export const getArtifactsByName = async (
     const data = await github.client.rest.actions.listArtifactsForRepo({
       owner: github.CONFIG.owner,
       repo: github.CONFIG.repo,
-      name: artifactName
+      name: artifactName,
     })
 
     console.log(JSON.stringify(data, null, 2))

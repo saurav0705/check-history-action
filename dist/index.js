@@ -39,7 +39,7 @@ class ArtifactHandler {
         return __awaiter(this, void 0, void 0, function* () {
             const ARTIFACT_NAME = this.generateArtifactName(name);
             // Get All Artifacts by Old Name
-            const artifacts = yield (0, artifacts_1.getArtifactsByName)(`${ARTIFACT_NAME}.txt`);
+            const artifacts = yield (0, artifacts_1.getArtifactsByName)(ARTIFACT_NAME);
             // Delete All Old Artifacts By Same Name
             yield (0, artifacts_1.deleteArtifacts)(artifacts);
             // Upload New Artifact
@@ -150,7 +150,7 @@ const getArtifactsByName = (artifactName) => __awaiter(void 0, void 0, void 0, f
         const data = yield client_1.github.client.rest.actions.listArtifactsForRepo({
             owner: client_1.github.CONFIG.owner,
             repo: client_1.github.CONFIG.repo,
-            name: artifactName
+            name: artifactName,
         });
         console.log(JSON.stringify(data, null, 2));
         return data.data.artifacts.map(art => art.id);
