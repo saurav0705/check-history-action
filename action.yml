@@ -2,17 +2,29 @@ name: 'Check History Action'
 description: 'Compare commits with file Regex and shows status if it should run the check or not'
 author: 'saurav0705'
 inputs:
-  KEYS: # change this
+  KEYS: 
     required: false
     description: 'Define key and regex pattern that needs to be fetched'
     default: ''
-  GIT_TOKEN: # change this
+  GIT_TOKEN:
     required: true
     description: 'GITHUB TOKEN FOR THE REPO'
     default: ''
   UPLOAD_KEY:
     required: false
     description: This is required to publish the successful sha to repo varaible
+  DISABLE_PR_COMMENT:
+    default: 'false'
+    required: false
+    description: This is used to turn off the pr comment which is published by action
+  DISABLE_CHECK:
+    default: 'false'
+    required: false
+    description: This is used to turn off the action
+  ARTIFACT_RETENTION_DAYS:
+    default: '30'
+    required: false
+    description: This is used to define artifact upload days 
 
 branding:
   icon: cloud-lightning

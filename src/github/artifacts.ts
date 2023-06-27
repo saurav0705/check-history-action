@@ -9,8 +9,6 @@ export const getArtifactsByName = async (
       ...github.getRequestConfig(),
       name: artifactName
     })
-
-    console.log(JSON.stringify(data, null, 2))
     return data.data.artifacts.map(art => art.id)
   } catch (e) {
     console.error(`Failed to fetch list of artifacts`, e)
@@ -45,7 +43,6 @@ export const downloadArtifact = async (
       })
       return resp.data as Buffer
     }
-
     throw new Error('no artifact found')
   } catch (e) {
     console.error(`Error in downloading an artifact ${artifactName}`, e)

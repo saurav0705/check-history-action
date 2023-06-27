@@ -14,7 +14,7 @@ import {github} from './github/client'
 
 class ArtifactHandler {
   client = create()
-  retentionDays = 90
+  retentionDays = 30
 
   setClient(client: ArtifactClient): void {
     this.client = client

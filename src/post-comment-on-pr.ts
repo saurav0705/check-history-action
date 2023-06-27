@@ -1,6 +1,6 @@
 import {artifact} from './artifact'
 import {github} from './github/client'
-import {deleteCommentOnPR, postCommentOnPR} from './github/post-comment-on-pr'
+import {deleteCommentOnPR, postCommentOnPR} from './github/post-comments'
 import {ArtifactFinalResponseStatus} from './regex-match-for-files'
 
 const generateCommitRunUrl = (sha: string | null): string => {
@@ -29,7 +29,6 @@ const makeSummaryForItem = (item: ArtifactFinalResponseStatus): string => {
 
 const deleteOldComment = async (): Promise<void> => {
   const commentId = await artifact.downloadArtifact('pr-comment')
-  console.log({commentId})
   if (commentId) {
     deleteCommentOnPR(parseInt(commentId, 10))
   }

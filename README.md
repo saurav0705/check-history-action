@@ -38,6 +38,7 @@ Ensure that you have these dependencies installed or included in your workflow e
           GIT_TOKEN: ${{secrets.GIT_SECRET}}
           # if UPLOAD_KEYS is present KEYS will be ignored
           UPLOAD_KEY: JOB_NAME_1
+          ARTIFACT_RETENTION_DAYS: '30' #default it is set to 30
 ```
 
 ### `GIT_TOKEN` (required)
@@ -158,4 +159,4 @@ jobs:
 
 ## Support
 
-For any questions or issues regarding this GitHub Action, please open an issue in the repository where the action is hosted.
+For any questions or issues regarding this GitHub Action, please open an issue in the repository.

@@ -24,7 +24,7 @@ const client_1 = __nccwpck_require__(1495);
 class ArtifactHandler {
     constructor() {
         this.client = (0, artifact_1.create)();
-        this.retentionDays = 90;
+        this.retentionDays = 30;
     }
     setClient(client) {
         this.client = client;
@@ -148,7 +148,6 @@ const getArtifactsByName = (artifactName) => __awaiter(void 0, void 0, void 0, f
     console.log('Fetching Artifacts By Name ', artifactName);
     try {
         const data = yield client_1.github.client.rest.actions.listArtifactsForRepo(Object.assign(Object.assign({}, client_1.github.getRequestConfig()), { name: artifactName }));
-        console.log(JSON.stringify(data, null, 2));
         return data.data.artifacts.map(art => art.id);
     }
     catch (e) {
@@ -261,7 +260,7 @@ exports.getFileDiffFromGithub = getFileDiffFromGithub;
 
 /***/ }),
 
-/***/ 1529:
+/***/ 9026:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -281,7 +280,6 @@ const client_1 = __nccwpck_require__(1495);
 const postCommentOnPR = (body) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = yield client_1.github.client.rest.issues.createComment(Object.assign(Object.assign({}, client_1.github.getRequestConfig()), { issue_number: client_1.github.CONFIG.issue_number, body }));
-        console.log(JSON.stringify(data, null, 2));
         return { commentId: data.data.id };
     }
     catch (e) {
@@ -406,7 +404,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.postCommentOnPrWithDetails = void 0;
 const artifact_1 = __nccwpck_require__(7917);
 const client_1 = __nccwpck_require__(1495);
-const post_comment_on_pr_1 = __nccwpck_require__(1529);
+const post_comments_1 = __nccwpck_require__(9026);
 const generateCommitRunUrl = (sha) => {
     if (!sha) {
         return `https://github.com/${client_1.github.CONFIG.owner}/${client_1.github.CONFIG.repo}/pull/${client_1.github.CONFIG.issue_number}/checks`;
@@ -428,14 +426,13 @@ const makeSummaryForItem = (item) => {
 };
 const deleteOldComment = () => __awaiter(void 0, void 0, void 0, function* () {
     const commentId = yield artifact_1.artifact.downloadArtifact('pr-comment');
-    console.log({ commentId });
     if (commentId) {
-        (0, post_comment_on_pr_1.deleteCommentOnPR)(parseInt(commentId, 10));
+        (0, post_comments_1.deleteCommentOnPR)(parseInt(commentId, 10));
     }
 });
 const createNewComment = (body) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
-    const data = yield (0, post_comment_on_pr_1.postCommentOnPR)(body);
+    const data = yield (0, post_comments_1.postCommentOnPR)(body);
     if (data) {
         artifact_1.artifact.uploadArtifact('pr-comment', (_b = (_a = data.commentId) === null || _a === void 0 ? void 0 : _a.toString()) !== null && _b !== void 0 ? _b : '');
     }

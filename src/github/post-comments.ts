@@ -9,7 +9,6 @@ export const postCommentOnPR = async (
       issue_number: github.CONFIG.issue_number,
       body
     })
-    console.log(JSON.stringify(data, null, 2))
     return {commentId: data.data.id}
   } catch (e) {
     console.error(`Error while posting comment on PR : `, e)

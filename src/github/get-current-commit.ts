@@ -7,8 +7,5 @@ export const getLatestCommitFromBranch = async (
     ...github.getRequestConfig(),
     ref: branch
   })
-
-  console.log({resp})
-
   return resp.data.sha
 }
