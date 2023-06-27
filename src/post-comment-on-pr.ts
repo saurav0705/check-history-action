@@ -1,13 +1,23 @@
 import {artifact} from './artifact'
+import {github} from './github/client'
 import {deleteCommentOnPR, postCommentOnPR} from './github/post-comment-on-pr'
 import {ArtifactFinalResponseStatus} from './regex-match-for-files'
+
+const generateCommitRunUrl = (sha: string | null): string => {
+  if (!sha) {
+    return `https://github.com/${github.CONFIG.owner}/${github.CONFIG.repo}/pull/${github.CONFIG.issue_number}/checks`
+  }
+  return `https://github.com/${github.CONFIG.owner}/${github.CONFIG.repo}/pull/${github.CONFIG.issue_number}/checks?sha=${sha}`
+}
 
 const makeSummaryForItem = (item: ArtifactFinalResponseStatus): string => {
   return `<details>
   <summary><h3>${item.suppliedKey}<code>${
     item.shouldRun
   }</code></h3></summary>\n
-  - Last Successfull Run Commit: \`${item.sha}\`\n
+  - Last Successfull Run Commit: [${item.sha}](${generateCommitRunUrl(
+    item.sha
+  )})\n
   - Pattern: \`${item.filesRegex}\`\n
   - Status: \`${item.shouldRun}\`\n
   ${item.diffUrl ? `- Diff Url: ${item.diffUrl}` : ''}

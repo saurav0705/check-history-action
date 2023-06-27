@@ -389,12 +389,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.postCommentOnPrWithDetails = void 0;
 const artifact_1 = __nccwpck_require__(7917);
+const client_1 = __nccwpck_require__(1495);
 const post_comment_on_pr_1 = __nccwpck_require__(1529);
+const generateCommitRunUrl = (sha) => {
+    if (!sha) {
+        return `https://github.com/${client_1.github.CONFIG.owner}/${client_1.github.CONFIG.repo}/pull/${client_1.github.CONFIG.issue_number}/checks`;
+    }
+    return `https://github.com/${client_1.github.CONFIG.owner}/${client_1.github.CONFIG.repo}/pull/${client_1.github.CONFIG.issue_number}/checks?sha=${sha}`;
+};
 const makeSummaryForItem = (item) => {
     var _a, _b;
     return `<details>
   <summary><h3>${item.suppliedKey}<code>${item.shouldRun}</code></h3></summary>\n
-  - Last Successfull Run Commit: \`${item.sha}\`\n
+  - Last Successfull Run Commit: [${item.sha}](${generateCommitRunUrl(item.sha)})\n
   - Pattern: \`${item.filesRegex}\`\n
   - Status: \`${item.shouldRun}\`\n
   ${item.diffUrl ? `- Diff Url: ${item.diffUrl}` : ''}
