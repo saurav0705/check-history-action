@@ -38,6 +38,10 @@ async function run(): Promise<void> {
     })
 
     if (UPLOAD_KEY) {
+      const ARTIFACT_RETENTION_DAYS = getInput('ARTIFACT_RETENTION_DAYS')
+        ? parseInt(getInput('RETENTION_DAYS'), 10)
+        : 90
+      artifact.setRetentionDays(ARTIFACT_RETENTION_DAYS)
       await artifact.uploadArtifact(UPLOAD_KEY, github.CONFIG.sha)
       return
     }

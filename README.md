@@ -56,6 +56,9 @@ This is used if you want to disable check then all the keys that are provided wi
 ### `DISABLE_PR_COMMENT` 
 This is used if you want to disable pr comment if this is truned as `true` this action will not post the comment.
 
+### `ARTIFACT_RETENTION_DAYS` 
+This is used to set artifact retention days while logging a successful run and will be consumed when `UPLOAD_KEYS` is given.
+
 ## Outputs
 
 This Return a `status` object in which the following are present
@@ -148,6 +151,7 @@ jobs:
       with:
           GIT_TOKEN: ${{secrets.GIT_SECRET}}
           UPLOAD_KEY: JOB_NAME
+          ARTIFACT_RETENTION_DAYS: '30'
 
 ```
 

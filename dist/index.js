@@ -349,6 +349,10 @@ function run() {
                 sha: (_d = github_1.context.payload.after) !== null && _d !== void 0 ? _d : ''
             });
             if (UPLOAD_KEY) {
+                const ARTIFACT_RETENTION_DAYS = (0, core_1.getInput)('ARTIFACT_RETENTION_DAYS')
+                    ? parseInt((0, core_1.getInput)('RETENTION_DAYS'), 10)
+                    : 90;
+                artifact_1.artifact.setRetentionDays(ARTIFACT_RETENTION_DAYS);
                 yield artifact_1.artifact.uploadArtifact(UPLOAD_KEY, client_1.github.CONFIG.sha);
                 return;
             }
