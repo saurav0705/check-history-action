@@ -23,8 +23,10 @@ const makeSummaryForItem = (item: ArtifactFinalResponseStatus): string => {
   ${item.diffUrl ? `- Diff Url: ${item.diffUrl}` : ''}
   ${item.diffFiles ? '- Diff Files:\n' : ''}
 	${item.diffFiles?.map(file => `\`${file}\``).join('\n') ?? ''}
+</details>
 
-</details>`
+\`Note\`: If Changed Files > \`290\` check will by deafult return true
+`
 }
 
 const deleteOldComment = async (): Promise<void> => {
