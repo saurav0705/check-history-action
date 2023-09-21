@@ -421,8 +421,10 @@ const makeSummaryForItem = (item) => {
   ${item.diffUrl ? `- Diff Url: ${item.diffUrl}` : ''}
   ${item.diffFiles ? '- Diff Files:\n' : ''}
 	${(_b = (_a = item.diffFiles) === null || _a === void 0 ? void 0 : _a.map(file => `\`${file}\``).join('\n')) !== null && _b !== void 0 ? _b : ''}
+</details>
 
-</details>`;
+\`Note\`: If Changed Files > \`290\` check will by deafult return true
+`;
 };
 const deleteOldComment = () => __awaiter(void 0, void 0, void 0, function* () {
     const commentId = yield artifact_1.artifact.downloadArtifact('pr-comment');
@@ -461,6 +463,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.matchFileForResponse = exports.matchFile = void 0;
 const picomatch_1 = __importDefault(__nccwpck_require__(8569));
 const matchFile = (files, pattern) => {
+    if (files.length > 290) {
+        return true;
+    }
     const isMatch = (0, picomatch_1.default)(pattern);
     for (const file of files) {
         if (isMatch(file)) {
