@@ -43,7 +43,7 @@ const parser = (input: string): InputObjectType[] => {
             })
             .map((_item, index) => ({
               ..._item,
-              key: `${_item.key}-${index + 1}`
+              key: `${item.key}-${index + 1}-${github.CONFIG.issue_number}`
             }))
     })
     .flat()
