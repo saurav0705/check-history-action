@@ -351,12 +351,14 @@ function run() {
                     ? parseInt((0, core_1.getInput)('RETENTION_DAYS'), 10)
                     : 90;
                 artifact_1.artifact.setRetentionDays(ARTIFACT_RETENTION_DAYS);
-                yield artifact_1.artifact.uploadArtifact(UPLOAD_KEY, client_1.github.CONFIG.sha);
+                const SHARD = (0, core_1.getInput)('SHARD') ? `-${(0, core_1.getInput)('SHARD')}-` : '';
+                yield artifact_1.artifact.uploadArtifact(UPLOAD_KEY + SHARD, client_1.github.CONFIG.sha);
                 return;
             }
             const artifactsToBeFetched = (0, core_1.getInput)(ARTIFACTS);
             // Get Input from action
             const { artifacts } = (0, take_input_1.getArtifactInputs)(artifactsToBeFetched);
+            console.log(JSON.stringify(artifacts, null, 2));
             //If Check is disabled it should return this
             if (DISABLE_CHECK) {
                 setOutputResponse(artifacts.map(item => (Object.assign(Object.assign({}, item), { sha: '', shouldRun: true, diffFiles: [], diffUrl: '' }))));
@@ -499,13 +501,35 @@ const client_1 = __nccwpck_require__(1495);
 const js_yaml_1 = __importDefault(__nccwpck_require__(1917));
 const parser = (input) => {
     const config = js_yaml_1.default.load(input);
-    return config.map(item => {
-        return {
-            key: `${item.key}-${client_1.github.CONFIG.issue_number}`,
-            filesRegex: item.pattern,
-            suppliedKey: item.key
-        };
-    });
+    return config
+        .map(item => {
+        var _a;
+        let count = 0;
+        try {
+            if (item.shards && !isNaN(parseInt(item.shards, 10))) {
+                count = parseInt((_a = item.shards) !== null && _a !== void 0 ? _a : '0', 10);
+            }
+        }
+        catch (e) {
+            console.error('Error Happened', e);
+        }
+        return count
+            ? [
+                {
+                    key: `${item.key}-${client_1.github.CONFIG.issue_number}`,
+                    filesRegex: item.pattern,
+                    suppliedKey: item.key
+                }
+            ]
+            : Array(count)
+                .fill({
+                key: `${item.key}-${client_1.github.CONFIG.issue_number}`,
+                filesRegex: item.pattern,
+                suppliedKey: item.key
+            })
+                .map((_item, index) => (Object.assign(Object.assign({}, _item), { key: `${item.key}-${index + 1}-${client_1.github.CONFIG.issue_number}` })));
+    })
+        .flat();
 };
 const getArtifactInputs = (input) => {
     return {

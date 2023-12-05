@@ -42,13 +42,17 @@ async function run(): Promise<void> {
         ? parseInt(getInput('RETENTION_DAYS'), 10)
         : 90
       artifact.setRetentionDays(ARTIFACT_RETENTION_DAYS)
-      await artifact.uploadArtifact(UPLOAD_KEY, github.CONFIG.sha)
+      const SHARD = getInput('SHARD') ? `-${getInput('SHARD')}-` : ''
+
+      await artifact.uploadArtifact(UPLOAD_KEY + SHARD, github.CONFIG.sha)
       return
     }
 
     const artifactsToBeFetched = getInput(ARTIFACTS)
     // Get Input from action
     const {artifacts} = getArtifactInputs(artifactsToBeFetched)
+
+    console.log(JSON.stringify(artifacts, null, 2))
 
     //If Check is disabled it should return this
     if (DISABLE_CHECK) {
