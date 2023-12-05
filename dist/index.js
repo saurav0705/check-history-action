@@ -351,13 +351,14 @@ function run() {
                     ? parseInt((0, core_1.getInput)('RETENTION_DAYS'), 10)
                     : 90;
                 artifact_1.artifact.setRetentionDays(ARTIFACT_RETENTION_DAYS);
-                const SHARD = (0, core_1.getInput)('SHARD') ? `-${(0, core_1.getInput)('SHARD')}` : '';
+                const SHARD = (0, core_1.getInput)('SHARD') ? `-${(0, core_1.getInput)('SHARD')}-` : '';
                 yield artifact_1.artifact.uploadArtifact(UPLOAD_KEY + SHARD, client_1.github.CONFIG.sha);
                 return;
             }
             const artifactsToBeFetched = (0, core_1.getInput)(ARTIFACTS);
             // Get Input from action
             const { artifacts } = (0, take_input_1.getArtifactInputs)(artifactsToBeFetched);
+            console.log(JSON.stringify(artifacts, null, 2));
             //If Check is disabled it should return this
             if (DISABLE_CHECK) {
                 setOutputResponse(artifacts.map(item => (Object.assign(Object.assign({}, item), { sha: '', shouldRun: true, diffFiles: [], diffUrl: '' }))));
@@ -526,7 +527,7 @@ const parser = (input) => {
                 filesRegex: item.pattern,
                 suppliedKey: item.key
             })
-                .map((_item, index) => (Object.assign(Object.assign({}, _item), { key: `${_item.key}-${index + 1}` })));
+                .map((_item, index) => (Object.assign(Object.assign({}, _item), { key: `${item.key}-${index + 1}-${client_1.github.CONFIG.issue_number}` })));
     })
         .flat();
 };
