@@ -13,16 +13,27 @@ export type ReturnTypeOfDiffFiles = {
 export const getFileDiffFromGithub = async ({
   base,
   head
-}: DiffFilesType): Promise<ReturnTypeOfDiffFiles> => {
+}: DiffFilesType, page = 1, allFiles = []): Promise<ReturnTypeOfDiffFiles> => {
   console.log(`fetching file diff for ${base} ${head}`)
+  
   const resp = await github.client.rest.repos.compareCommits({
     ...github.getRequestConfig(),
     base,
-    head
+    head,
+    per_page: 250,
+    page
   })
 
-  return {
-    files: resp.data.files?.map(item => item.filename) ?? [],
-    url: resp.data.html_url
+  const files = resp.data.files?.map(item => item.filename) ?? [];
+  allFiles = allFiles.concat(files);
+
+  // Check if there are more pages to fetch
+  if (github.client.hasNextPage(resp)) {
+    return getFileDiffFromGithub({ base, head }, page + 1, allFiles);
   }
+
+  return {
+    files: allFiles,
+    url: resp.data.html_url
+  };
 }
