@@ -421,10 +421,7 @@ const makeSummaryForItem = (item) => {
   ${item.diffUrl ? `- Diff Url: ${item.diffUrl}` : ''}
   ${item.diffFiles ? '- Diff Files:\n' : ''}
 	${(_b = (_a = item.diffFiles) === null || _a === void 0 ? void 0 : _a.map(file => `\`${file}\``).join('\n')) !== null && _b !== void 0 ? _b : ''}
-</details>
-
-\`Note\`: If Changed Files > \`290\` check will by deafult return true
-`;
+</details>`;
 };
 const deleteOldComment = () => __awaiter(void 0, void 0, void 0, function* () {
     const commentId = yield artifact_1.artifact.downloadArtifact('pr-comment');
