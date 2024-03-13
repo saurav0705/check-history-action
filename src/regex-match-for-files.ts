@@ -7,9 +7,6 @@ export type ArtifactFinalResponseStatus = ArtifactReponseTypeWithFileDiff & {
 }
 
 export const matchFile = (files: string[], pattern: string): boolean => {
-  if (files.length > 290) {
-    return true
-  }
   const isMatch = picomatch(pattern)
   for (const file of files) {
     if (isMatch(file)) {
