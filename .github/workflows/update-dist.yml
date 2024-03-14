@@ -7,7 +7,7 @@ name: Update dist/
 
 on:
   push:
-    paths:
+    branches:
       - main
     paths-ignore:
       - '**.md'
