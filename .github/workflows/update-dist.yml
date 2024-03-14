@@ -11,7 +11,7 @@ on:
       - main
     paths-ignore:
       - '**.md'
-      - dist/**
+      - 'dist/**'
   workflow_dispatch:
 
 jobs:
