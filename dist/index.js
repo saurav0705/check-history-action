@@ -460,9 +460,6 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.matchFileForResponse = exports.matchFile = void 0;
 const picomatch_1 = __importDefault(__nccwpck_require__(8569));
 const matchFile = (files, pattern) => {
-    if (files.length > 290) {
-        return true;
-    }
     const isMatch = (0, picomatch_1.default)(pattern);
     for (const file of files) {
         if (isMatch(file)) {
