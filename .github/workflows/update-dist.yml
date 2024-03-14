@@ -3,10 +3,12 @@
 # `index.js` is the code that will run.
 # For our project, we generate this file through a build process from other source files.
 # We need to make sure the checked-in `index.js` actually matches what we expect it to be.
-name: Check dist/
+name: Update dist/
 
 on:
-  pull_request:
+  push:
+    paths:
+      - main
     paths-ignore:
       - '**.md'
   workflow_dispatch:
@@ -17,6 +19,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GIT_TOKEN }}
 
       - name: Set Node.js 18.x
         uses: actions/setup-node@v3.6.0
@@ -39,3 +43,9 @@ jobs:
             exit 1
           fi
         id: diff
+
+      - name: commit to main
+        shell: bash
+        run: |
+          git commit -m "feat: updated dist"
+          git push origin -f ${{github.ref}}
