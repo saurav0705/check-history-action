@@ -288,8 +288,6 @@ const getFileDiffFromGithub = (_a) => __awaiter(void 0, [_a], void 0, function* 
     // Get the html_url from this only
     const resp = yield client_1.github.client.rest.repos.compareCommits(Object.assign(Object.assign({}, client_1.github.getRequestConfig()), { base,
         head }));
-    console.log('ALL FILES INCLUDE:', allFiles);
-    console.log('ALL FILES SIZE IS:', allFiles.length);
     return {
         files: allFiles,
         url: resp.data.html_url
