@@ -46,6 +46,9 @@ export const getFileDiffFromGithub = async ({
     head
   })
 
+  console.log('ALL FILES INCLUDE:', allFiles)
+  console.log('ALL FILES SIZE IS:', allFiles.length)
+
   return {
     files: allFiles,
     url: resp.data.html_url
