@@ -18,8 +18,8 @@ export const getDiffFiles = async (
 ): Promise<ReturnTypeOfDiffFiles> => {
   if (!hash[`${prevSha}--${currSha}`]) {
     hash[`${prevSha}--${currSha}`] = await getFileDiffFromGithub({
-      base: prevSha,
-      head: currSha
+      baseSha: prevSha,
+      headSha: currSha
     })
   }
   return Promise.resolve(hash[`${prevSha}--${currSha}`])

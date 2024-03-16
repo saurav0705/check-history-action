@@ -96,8 +96,8 @@ const hash = {};
 const getDiffFiles = (prevSha, currSha) => __awaiter(void 0, void 0, void 0, function* () {
     if (!hash[`${prevSha}--${currSha}`]) {
         hash[`${prevSha}--${currSha}`] = yield (0, get_diff_from_commit_1.getFileDiffFromGithub)({
-            base: prevSha,
-            head: currSha
+            baseSha: prevSha,
+            headSha: currSha
         });
     }
     return Promise.resolve(hash[`${prevSha}--${currSha}`]);
@@ -269,25 +269,36 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getFileDiffFromGithub = void 0;
 const exec = __importStar(__nccwpck_require__(1514));
 const client_1 = __nccwpck_require__(1495);
-const getFileDiffFromGithub = (_a) => __awaiter(void 0, [_a], void 0, function* ({ base, head }) {
-    const { exitCode, stdout, stderr } = yield exec.getExecOutput('git', [
+const getFileDiffFromGithub = (_a) => __awaiter(void 0, [_a], void 0, function* ({ baseSha, headSha }) {
+    const base = yield exec.getExecOutput('git', ['fetch', 'origin', baseSha]);
+    const head = yield exec.getExecOutput('git', ['fetch', 'origin', headSha]);
+    const diff = yield exec.getExecOutput('git', [
         'diff',
         '--name-only',
         '--ignore-submodules=all',
         `--diff-filter=ACDMRTUX`,
-        `${base}..${head}`
+        `${baseSha}..${headSha}`
     ], {
         cwd: '.',
         ignoreReturnCode: true,
         silent: false
     });
-    if (exitCode !== 0) {
-        throw new Error(`Failed to get diff files between ${base}..${head} Exit code: ${exitCode}. Due to error ${stderr}`);
+    if (!diff.exitCode || !base.exitCode || !head.exitCode) {
+        const errors = [];
+        if (!diff.exitCode) {
+            errors.push(`Failed to get diff files between ${base}..${head} Exit code: ${diff.exitCode}. Due to error ${diff.stderr}`);
+        }
+        if (!base.exitCode) {
+            errors.push(`Failed to fetch base: ${base} commit Exit code: ${base.exitCode}. Due to error ${base.stderr}`);
+        }
+        if (!head.exitCode) {
+            errors.push(`Failed to fetch head: ${head} commit Exit code: ${head.exitCode}. Due to error ${head.stderr}`);
+        }
+        throw new Error(errors.join("\n"));
     }
-    const allFiles = stdout.split('\n').filter(Boolean);
+    const allFiles = diff.stdout.split('\n').filter(Boolean);
     // Get the html_url from this only
-    const resp = yield client_1.github.client.rest.repos.compareCommits(Object.assign(Object.assign({}, client_1.github.getRequestConfig()), { base,
-        head }));
+    const resp = yield client_1.github.client.rest.repos.compareCommits(Object.assign(Object.assign({}, client_1.github.getRequestConfig()), { base: baseSha, head: headSha }));
     return {
         files: allFiles,
         url: resp.data.html_url

@@ -2,8 +2,8 @@ import * as exec from '@actions/exec'
 import {github} from './client'
 
 type DiffFilesType = {
-  base: string
-  head: string
+  baseSha: string
+  headSha: string
 }
 
 export type ReturnTypeOfDiffFiles = {
@@ -12,11 +12,11 @@ export type ReturnTypeOfDiffFiles = {
 }
 
 export const getFileDiffFromGithub = async ({
-  base,
-  head
+  baseSha,
+  headSha
 }: DiffFilesType): Promise<ReturnTypeOfDiffFiles> => {
-  const base = await exec.getExecOutput('git' , ['fetch', 'origin', base])
-  const head = await exec.getExecOutput('git' , ['fetch', 'origin', head])
+  const base = await exec.getExecOutput('git' , ['fetch', 'origin', baseSha])
+  const head = await exec.getExecOutput('git' , ['fetch', 'origin', headSha])
   const diff = await exec.getExecOutput(
     'git',
     [
@@ -24,7 +24,7 @@ export const getFileDiffFromGithub = async ({
       '--name-only',
       '--ignore-submodules=all',
       `--diff-filter=ACDMRTUX`,
-      `${base}..${head}`
+      `${baseSha}..${headSha}`
     ],
     {
       cwd: '.',
@@ -51,13 +51,13 @@ export const getFileDiffFromGithub = async ({
     throw new Error(errors.join("\n"))
   }
 
-  const allFiles = stdout.split('\n').filter(Boolean)
+  const allFiles = diff.stdout.split('\n').filter(Boolean)
 
   // Get the html_url from this only
   const resp = await github.client.rest.repos.compareCommits({
     ...github.getRequestConfig(),
-    base,
-    head
+    base: baseSha,
+    head: headSha
   })
 
   return {
