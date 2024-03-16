@@ -51,9 +51,6 @@ jobs:
       - name: commit to main
         shell: bash
         run: |
-          git add .
-          git commit -m "${{env.CI_COMMIT_MESSAGE}}"
-          git tag -a ${{steps.version}} head -m "chore: released vserion ${{steps.version}}"
           git push origin main
           git push --tags origin main
       - name: Create release
@@ -61,8 +58,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
           tag: main
         run: |
-          gh release create "${{steps.version}}" \
-              --title="Released Artifact ${{steps.version}}" \
+          gh release create "v${{steps.version.outputs.value}}" \
+              --title="Released Artifact v${{steps.version.outputs.value}}" \
               --generate-notes \
-              --verify-tag
+              --verify-tag \
               --draft
