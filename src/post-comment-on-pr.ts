@@ -24,8 +24,6 @@ const makeSummaryForItem = (item: ArtifactFinalResponseStatus): string => {
   ${item.diffFiles ? '- Diff Files:\n' : ''}
 	${item.diffFiles?.map(file => `\`${file}\``).join('\n') ?? ''}
 </details>
-
-\`Note\`: If Changed Files > \`290\` check will by deafult return true
 `
 }
 
