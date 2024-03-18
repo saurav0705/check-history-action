@@ -1,0 +1,65 @@
+name: Release
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+on:
+  workflow_dispatch:
+    inputs:
+      type:
+        description: release type
+        required: true
+        type: choice
+        default: patch
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  release:
+    name: Release pushed tag
+    runs-on: ubuntu-22.04
+    env:
+      CI_COMMIT_MESSAGE: 'feat: released a new version'
+      CI_COMMIT_AUTHOR: Continuous Integration
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GIT_TOKEN }}
+          ref: main
+      - name: Set Node.js 18.x
+        uses: actions/setup-node@v3.6.0
+        with:
+          node-version: 18.x
+
+      - name: Install dependencies
+        run: yarn
+      - name: bump version
+        shell: bash
+        run: |
+          git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
+          git config --global user.email "username@users.noreply.github.com"
+          npm version ${{inputs.type}}
+      - name: Get Package version
+        id: version
+        uses: zoexx/github-action-json-file-properties@release
+        with:
+          file_path: 'package.json'
+          prop_path: 'version'
+      - name: commit to main
+        shell: bash
+        run: |
+          git push origin main
+          git push --tags origin main
+      - name: Create release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+          tag: main
+        run: |
+          gh release create "v${{steps.version.outputs.value}}" \
+              --title="Released Artifact v${{steps.version.outputs.value}}" \
+              --generate-notes \
+              --verify-tag \
+              --draft
