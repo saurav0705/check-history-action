@@ -15,7 +15,7 @@ const makeSummaryForItem = (item: ArtifactFinalResponseStatus): string => {
   <summary><h3>${item.suppliedKey}<code>${
     item.shouldRun
   }</code></h3></summary>\n
-  - Last Successfull Run Commit: [${item.sha}](${generateCommitRunUrl(
+  - Last Successfully Run Commit: [${item.sha}](${generateCommitRunUrl(
     item.sha
   )})\n
   - Pattern: \`${item.filesRegex}\`\n
