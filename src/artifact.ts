@@ -1,4 +1,4 @@
-import {ArtifactClient, create} from '@actions/artifact'
+import {DefaultArtifactClient} from '@actions/artifact'
 import {
   arrayBufferToFile,
   convertFileToString,
@@ -13,12 +13,8 @@ import {
 import {github} from './github/client'
 
 class ArtifactHandler {
-  client = create()
+  client = new DefaultArtifactClient()
   retentionDays = 30
-
-  setClient(client: ArtifactClient): void {
-    this.client = client
-  }
 
   setRetentionDays(days: number): void {
     this.retentionDays = days

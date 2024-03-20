@@ -49,7 +49,7 @@ The GitHub token used to authenticate API requests. You can use the `{{ secrets.
 This is the key in which we mention the workflow name and pattern that we want to match which are seperated by `,`.
 
 ### `UPLOAD_KEY` (required)
-This is required when you want to update on successfull run of a job.
+This is required when you want to update the successful run of a job.
 
 ### `DISABLE_CHECK` 
 This is used if you want to disable check then all the keys that are provided will have shouldRun as `true`.
