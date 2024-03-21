@@ -37,6 +37,11 @@ async function run(): Promise<void> {
       sha: context.sha ?? ''
     })
 
+    if(github.CONFIG.sha === '')
+    {
+      console.error(`Error: Commit sha is an empty string. This action may not be supported in this context. Context: ${context}`)
+    }
+
     if (UPLOAD_KEY) {
       const ARTIFACT_RETENTION_DAYS = getInput('ARTIFACT_RETENTION_DAYS')
         ? parseInt(getInput('RETENTION_DAYS'), 10)
