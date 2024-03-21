@@ -34,7 +34,7 @@ async function run(): Promise<void> {
       repo: context.repo.repo ?? '',
       owner: context.repo.owner ?? '',
       issue_number: context.payload.number ?? 0,
-      sha: context.payload.after ?? ''
+      sha: context.sha ?? ''
     })
 
     if (UPLOAD_KEY) {
