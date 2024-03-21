@@ -39,7 +39,7 @@ async function run(): Promise<void> {
 
     if(github.CONFIG.sha === '')
     {
-      console.error(`Error: Commit sha is an empty string. This action may not be supported in this context. Context: ${context}`)
+      console.error(`Error: Commit sha is an empty string. This action may not be supported in this context. Context: ${JSON.stringify(context)}`)
     }
 
     if (UPLOAD_KEY) {
