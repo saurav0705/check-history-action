@@ -34,7 +34,7 @@ async function run(): Promise<void> {
       repo: context.repo.repo ?? '',
       owner: context.repo.owner ?? '',
       issue_number: context.payload.number ?? 0,
-      sha: context.payload.after || context.payload.pull_request?.head.sha || "",
+      sha: context.payload.after || '',
     })
 
     if(github.CONFIG.sha === '')
