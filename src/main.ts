@@ -23,12 +23,20 @@ import {getConfig} from './get-config'
 import {getUploadConfig} from './get-upload-config'
 
 const uploadFlow = async (input: string) => {
+  startGroup(`Starting Upload Flow...`)
+  info(`GITHUB CONFIG => ${JSON.stringify(github.CONFIG, null, 2)}`)
   const {key, retentionDays} = getUploadConfig(input)
+  info(
+    `Uploading Artifact for ${JSON.stringify({key, retentionDays}, null, 2)}`
+  )
   await artifact.uploadArtifact(key, github.CONFIG.sha, retentionDays)
+  endGroup()
   return
 }
 
 const checkFlow = async (config: string) => {
+  startGroup(`Started Check Flow...`)
+  info(`GITHUB CONFIG => ${JSON.stringify(github.CONFIG, null, 2)}`)
   const setOutputResponse = (response: ArtifactFinalResponseStatus[]): void => {
     for (const resp of response) {
       setOutput(resp.suppliedKey, resp)
@@ -72,11 +80,13 @@ const checkFlow = async (config: string) => {
 
   endGroup()
 
+  startGroup(`Posting PR Comment`)
   // post a message summary of action if not disabled
   await postCommentOnPrWithDetails(
     artifactValueWithShaAndFileDiffWithShouldRunStatus,
     comment
   )
+  endGroup()
 
   // set output
   setOutputResponse(artifactValueWithShaAndFileDiffWithShouldRunStatus)
@@ -94,11 +104,7 @@ async function run(): Promise<void> {
       sha: context.payload.pull_request?.head.sha ?? ''
     })
 
-    startGroup(`Initiating configs for github and input...`)
-
-    info(`GITHUB CONFIG => ${JSON.stringify(github.CONFIG, null, 2)}`)
-
-    if (UPLOAD) {
+    if (UPLOAD?.length) {
       await uploadFlow(UPLOAD)
       return
     }

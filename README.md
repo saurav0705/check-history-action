@@ -121,10 +121,6 @@ The GitHub token used to authenticate API requests. You can use the `{{ secrets.
   - Description: This setting defines the pattern against which checks will be applied.
   - Value: `/file/pattern` represents the picomatch expression pattern used for matching.
 
-### `ARTIFACT_RETENTION_DAYS`
-
-This is used to set artifact retention days while logging a successful run and will be consumed when `UPLOAD_KEYS` is given.
-
 ## Outputs
 
 This Return a `status` object in which the following are present

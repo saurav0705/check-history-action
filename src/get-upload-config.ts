@@ -7,11 +7,11 @@ type TUploadConfig = {
 
 export const getUploadConfig = (config: string): TUploadConfig => {
   const _config = checkForFileOrLoadYml(config)
-  if (_config.name?.length) {
+  if (!_config.key?.length) {
     throw new Error(`name is required to upload artifact`)
   }
   const initialConfig: TUploadConfig = {
-    key: _config.name,
+    key: _config.key,
     retentionDays: 30
   }
 

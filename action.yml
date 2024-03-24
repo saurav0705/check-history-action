@@ -9,9 +9,7 @@ inputs:
   UPLOAD:
     description: This is required to publish the successful sha to repo varaible
     required: false
-    default: |
-      key: ''
-      retentionDays : 30
+    default: ''
   CONFIG:
     required: true
     description: |
