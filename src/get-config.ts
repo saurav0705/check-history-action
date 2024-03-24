@@ -33,14 +33,14 @@ const checkForBoolean = (value: string, fallback = false): boolean => {
 }
 
 const checkForPatternArray = (value: any): string[] => {
-  if (Array.isArray(value)) {
+  if (!Array.isArray(value)) {
     throw new Error(`pattern should be a type of array`)
   }
   return (value as any[]).map(item => item.toString())
 }
 
 const checkForChecks = (value: any): TChecks[] => {
-  if (Array.isArray(value)) {
+  if (!Array.isArray(value)) {
     throw new Error(`checks should be a type of array`)
   }
   return (value as Partial<TChecks>[])

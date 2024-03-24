@@ -14,7 +14,6 @@ import {github} from './github/client'
 import {artifact} from './artifact'
 import {getConfig} from './get-config'
 
-const ARTIFACTS = 'KEYS'
 async function run(): Promise<void> {
   try {
     const setOutputResponse = (
@@ -25,7 +24,8 @@ async function run(): Promise<void> {
       }
     }
 
-    const GIT_TOKEN = getInput('GIT_TOKEN')
+    // const GIT_TOKEN = getInput('GIT_TOKEN')
+    const GIT_TOKEN = getInput('GITHUB_TOKEN')
     const UPLOAD_KEY = getInput('UPLOAD_KEY')
 
     github.setClient(GIT_TOKEN)
@@ -36,6 +36,7 @@ async function run(): Promise<void> {
       sha: context.sha ?? ''
     })
 
+    info(`GITHUB ENV => ${JSON.stringify(process.env, null, 2)}`)
     info(`GITHUB CONTEXT => ${JSON.stringify(context, null, 2)}`)
     info(`GITHUB CONFIG => ${JSON.stringify(github.CONFIG, null, 2)}`)
 
