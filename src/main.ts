@@ -36,6 +36,7 @@ async function run(): Promise<void> {
       sha: context.sha ?? ''
     })
 
+    info(`GITHUB CONTEXT => ${JSON.stringify(context, null, 2)}`)
     info(`GITHUB CONFIG => ${JSON.stringify(github.CONFIG, null, 2)}`)
 
     if (UPLOAD_KEY) {

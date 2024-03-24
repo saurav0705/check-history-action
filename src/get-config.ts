@@ -68,6 +68,7 @@ export const getConfig = (config: string): TConfig => {
     }
   }
   const _config = yml.load(config) as Record<string, any>
+  console.log(JSON.stringify(_config, null, 2))
   initialConfig.disable = checkForBoolean(_config.disable_check)
   initialConfig.comment = {
     disable: checkForBoolean(_config.comment.disble_pr_comment),
