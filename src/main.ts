@@ -1,4 +1,4 @@
-import {getInput, setOutput, setFailed} from '@actions/core'
+import {getInput, setOutput, setFailed, info} from '@actions/core'
 import {context} from '@actions/github'
 
 import {getAllArtifactValues} from './values-from-variables'
@@ -12,6 +12,7 @@ import {postCommentOnPrWithDetails} from './post-comment-on-pr'
 
 import {github} from './github/client'
 import {artifact} from './artifact'
+import {getConfig} from './get-config'
 
 const ARTIFACTS = 'KEYS'
 async function run(): Promise<void> {
@@ -26,16 +27,16 @@ async function run(): Promise<void> {
 
     const GIT_TOKEN = getInput('GIT_TOKEN')
     const UPLOAD_KEY = getInput('UPLOAD_KEY')
-    const DISABLE_PR_COMMENT = getInput('DISABLE_PR_COMMENT') === 'true'
-    const DISABLE_CHECK = getInput('DISABLE_CHECK') === 'true'
 
     github.setClient(GIT_TOKEN)
     github.setConfig({
       repo: context.repo.repo ?? '',
       owner: context.repo.owner ?? '',
       issue_number: context.payload.number ?? 0,
-      sha: context.payload.after ?? ''
+      sha: context.sha ?? ''
     })
+
+    info(`GITHUB CONFIG => ${JSON.stringify(github.CONFIG, null, 2)}`)
 
     if (UPLOAD_KEY) {
       const ARTIFACT_RETENTION_DAYS = getInput('ARTIFACT_RETENTION_DAYS')
@@ -46,12 +47,13 @@ async function run(): Promise<void> {
       return
     }
 
-    const artifactsToBeFetched = getInput(ARTIFACTS)
+    const {disable, comment, checks} = getConfig(getInput('CONFIG'))
+
     // Get Input from action
-    const {artifacts} = getArtifactInputs(artifactsToBeFetched)
+    const {artifacts} = getArtifactInputs(checks)
 
     //If Check is disabled it should return this
-    if (DISABLE_CHECK) {
+    if (disable) {
       setOutputResponse(
         artifacts.map(item => ({
           ...item,
@@ -77,11 +79,10 @@ async function run(): Promise<void> {
       matchFileForResponse(artifactValueWithShaAndFileDiff)
 
     // post a message summary of action if not disabled
-    if (!DISABLE_PR_COMMENT) {
-      await postCommentOnPrWithDetails(
-        artifactValueWithShaAndFileDiffWithShouldRunStatus
-      )
-    }
+    await postCommentOnPrWithDetails(
+      artifactValueWithShaAndFileDiffWithShouldRunStatus,
+      comment
+    )
 
     // set output
     setOutputResponse(artifactValueWithShaAndFileDiffWithShouldRunStatus)

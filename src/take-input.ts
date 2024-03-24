@@ -1,33 +1,22 @@
+import {TChecks} from './get-config'
 import {github} from './github/client'
-import yml from 'js-yaml'
 
-export type InputObjectType = {
-  key: string
-  filesRegex: string
+export type InputObjectType = TChecks & {
   suppliedKey: string
-}
-
-type InputYaml = {
-  key: string
-  pattern: string
-}
-
-const parser = (input: string): InputObjectType[] => {
-  const config = yml.load(input) as InputYaml[]
-
-  return config.map(item => {
-    return {
-      key: `${item.key}-${github.CONFIG.issue_number}`,
-      filesRegex: item.pattern,
-      suppliedKey: item.key
-    }
-  })
+  filesRegex: string[]
 }
 
 export const getArtifactInputs = (
-  input: string
+  input: TChecks[]
 ): {artifacts: InputObjectType[]} => {
   return {
-    artifacts: parser(input)
+    artifacts: input.map(item => {
+      return {
+        ...item,
+        key: `${item.key}-${github.CONFIG.issue_number}`,
+        filesRegex: item.pattern,
+        suppliedKey: item.key
+      }
+    })
   }
 }
