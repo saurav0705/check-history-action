@@ -33,11 +33,9 @@ async function run(): Promise<void> {
       repo: context.repo.repo ?? '',
       owner: context.repo.owner ?? '',
       issue_number: context.payload.number ?? 0,
-      sha: context.sha ?? ''
+      sha: context.payload.pull_request?.head.sha ?? ''
     })
 
-    info(`GITHUB ENV => ${JSON.stringify(process.env, null, 2)}`)
-    info(`GITHUB CONTEXT => ${JSON.stringify(context, null, 2)}`)
     info(`GITHUB CONFIG => ${JSON.stringify(github.CONFIG, null, 2)}`)
 
     if (UPLOAD_KEY) {

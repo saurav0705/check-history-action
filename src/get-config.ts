@@ -1,4 +1,5 @@
 import yml from 'js-yaml'
+import fs from 'fs'
 
 export type TChecks = {
   key: string
@@ -58,6 +59,13 @@ const checkForChecks = (value: any): TChecks[] => {
       (item): item is TChecks => !!(item.key?.length && item.pattern.length)
     )
 }
+
+const checkForFile = (input: string): string => {
+  if (fs.existsSync(input)) {
+    return fs.readFileSync(input, 'utf-8').toString()
+  }
+  return input
+}
 export const getConfig = (config: string): TConfig => {
   const initialConfig: TConfig = {
     disable: false,
@@ -67,7 +75,7 @@ export const getConfig = (config: string): TConfig => {
       artifactRetentionDays: 0
     }
   }
-  const _config = yml.load(config) as Record<string, any>
+  const _config = yml.load(checkForFile(config)) as Record<string, any>
   console.log(JSON.stringify(_config, null, 2))
   initialConfig.disable = checkForBoolean(_config.disable_check)
   initialConfig.comment = {
