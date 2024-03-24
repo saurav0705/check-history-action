@@ -24,7 +24,11 @@ class ArtifactHandler {
     return `check-action-history-${github.CONFIG.owner}-${github.CONFIG.repo}-${name}-${github.CONFIG.issue_number}`
   }
 
-  async uploadArtifact(name: string, value: string): Promise<void> {
+  async uploadArtifact(
+    name: string,
+    value: string,
+    retentionDays?: number
+  ): Promise<void> {
     const ARTIFACT_NAME = this.generateArtifactName(name)
     // Get All Artifacts by Old Name
     const artifacts = await getArtifactsByName(ARTIFACT_NAME)
@@ -35,7 +39,7 @@ class ArtifactHandler {
     // Upload New Artifact
     convertStringToFile(`${ARTIFACT_NAME}.txt`, value)
     this.client.uploadArtifact(ARTIFACT_NAME, [`${ARTIFACT_NAME}.txt`], '.', {
-      retentionDays: this.retentionDays
+      retentionDays: retentionDays ?? this.retentionDays
     })
   }
 

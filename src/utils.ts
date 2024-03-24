@@ -1,5 +1,13 @@
 import fs from 'fs'
 import AdmZip from 'adm-zip'
+import yml from 'js-yaml'
+
+const checkForFile = (input: string): string => {
+  if (fs.existsSync(input)) {
+    return fs.readFileSync(input, 'utf-8').toString()
+  }
+  return input
+}
 
 export const convertFileToString = (filePath: string): string | null => {
   try {
@@ -53,4 +61,22 @@ export function extractFileFromZip(
   } else {
     console.log(`File '${fileName}' not found in the zip.`)
   }
+}
+
+export const checkForNumber = (value: string, fallback = 30): number => {
+  if (value?.length) {
+    return parseInt(value, 10)
+  }
+  return fallback
+}
+
+export const checkForBoolean = (value: string, fallback = false): boolean => {
+  if (value?.length) {
+    return value === 'true'
+  }
+  return fallback
+}
+
+export const checkForFileOrLoadYml = (input: string): Record<string, any> => {
+  return yml.load(checkForFile(input)) as Record<string, any>
 }

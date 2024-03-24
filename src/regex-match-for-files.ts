@@ -6,7 +6,7 @@ export type ArtifactFinalResponseStatus = ArtifactReponseTypeWithFileDiff & {
   shouldRun: boolean
 }
 
-export const matchFile = (files: string[], pattern: string): boolean => {
+export const matchFile = (files: string[], pattern: string[]): boolean => {
   const isMatch = picomatch(pattern)
   for (const file of files) {
     if (isMatch(file)) {
@@ -21,8 +21,9 @@ export const matchFileForResponse = (
 ): ArtifactFinalResponseStatus[] => {
   return artifacts.map(artifact => ({
     ...artifact,
-    shouldRun: artifact.diffFiles
-      ? matchFile(artifact.diffFiles, artifact.filesRegex)
-      : true
+    shouldRun:
+      artifact.diffFiles && !artifact.disable
+        ? matchFile(artifact.diffFiles, artifact.filesRegex)
+        : true
   }))
 }
