@@ -77,8 +77,9 @@ checks:
   id: check-changed-file
   with:
     GIT_TOKEN: ${{secrets.GIT_SECRET}}
-    UPLOAD_KEY: JOB_NAME
-    ARTIFACT_RETENTION_DAYS: '30' #default it is set to 30
+    UPLOAD: |
+      key: JOB_NAME
+      retentionDays : 30 #default it is set to 30
 ```
 
 ### `GIT_TOKEN`
@@ -91,30 +92,34 @@ The GitHub token used to authenticate API requests. You can use the `{{ secrets.
 
 ### Disable Settings
 
-- **Disable**: `boolean`
+- **disable**: `boolean`
   - Description: This setting controls the overall disabling of the action.
   - Value: `false` indicates that the feature is enabled and is default value.
 
 ### Comment Settings
 
-- **Disable**: `false`
+- **disable**: `false`
   - Description: This sub-setting under `comment` controls the disabling of pr commenting functionality.
   - Value: `false` indicates that commenting functionality is enabled which is default.
-- **Retention Days**: `30`
+- **retentionDays**: `30`
   - Description: This sub-setting specifies the retention period for pr comment.
   - Value: `30` indicates comments will be retained for 30 days which is bt default.
 
 ### Checks
 
-- **Key**: `name`
+- **key**: `string`
   - Description: This setting specifies a key which is identify against which check you are running the checks.
-- **Pattern**:
+- **pattern**:
   - Description: This setting defines the pattern against which checks will be applied.
   - Value: `/file/pattern` represents the picomatch expression pattern used for matching.
 
-### `UPLOAD_KEY` (required)
+### `UPLOAD`
 
-This is required when you want to update the successful run of a job.
+- **key**: `string`
+  - Description: This setting specifies a key which is identify against which check you are uploading the `sha`.
+- **retentionDays**:
+  - Description: This setting defines the pattern against which checks will be applied.
+  - Value: `/file/pattern` represents the picomatch expression pattern used for matching.
 
 ### `ARTIFACT_RETENTION_DAYS`
 
@@ -187,9 +192,10 @@ jobs:
       with:
           GIT_TOKEN: ${{secrets.GIT_SECRET}}
           CONFIG: |
-            - key: JOB_NAME
-              pattern:
-                - file/pattern/match
+            checks
+              - key: JOB_NAME
+                pattern:
+                  - file/pattern/match
 
     - name: Print status
       run: echo "Action status: ${{ steps.regex_commenter.outputs.status }}"
@@ -205,7 +211,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '14'
+        node-version: '20'
 
     - name: Install Dependencies
       run: do something
@@ -214,8 +220,9 @@ jobs:
       uses: saurav0705/check-history-action@v1
       with:
           GIT_TOKEN: ${{secrets.GIT_SECRET}}
-          UPLOAD_KEY: JOB_NAME
-          ARTIFACT_RETENTION_DAYS: '30'
+          UPLOAD: |
+            name: JOB_NAME
+            retentionDays : 30
 ```
 
 ## Support

@@ -2,7 +2,17 @@ name: 'Check History Action'
 description: 'Compare commits with file Regex and shows status if it should run the check or not'
 author: 'saurav0705'
 inputs:
-  CONIFG:
+  GIT_TOKEN:
+    required: false
+    description: 'GITHUB TOKEN FOR THE REPO'
+    default: ${{github.token}}
+  UPLOAD:
+    description: This is required to publish the successful sha to repo varaible
+    required: false
+    default: |
+      key: ''
+      retentionDays : 30
+  CONFIG:
     required: true
     description: |
       // This is the config for the action it can take either file path or you can directly pass the config which follows the below structure
@@ -20,17 +30,6 @@ inputs:
           disbale: false // disable individual check
           disableInComment: false // does not post status in message
     default: ''
-  GIT_TOKEN:
-    required: false
-    description: 'GITHUB TOKEN FOR THE REPO'
-    default: ${{github.token}}
-  UPLOAD_KEY:
-    required: false
-    description: This is required to publish the successful sha to repo varaible
-  ARTIFACT_RETENTION_DAYS:
-    default: '30'
-    required: false
-    description: This is used to define artifact upload days
 
 branding:
   icon: cloud-lightning

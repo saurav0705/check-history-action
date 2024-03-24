@@ -1,5 +1,4 @@
-import yml from 'js-yaml'
-import fs from 'fs'
+import {checkForBoolean, checkForFileOrLoadYml, checkForNumber} from './utils'
 
 export type TChecks = {
   key: string
@@ -17,20 +16,6 @@ type TConfig = {
   comment: TComment
   disable: boolean
   checks: TChecks[]
-}
-
-const checkForNumber = (value: string, fallback = 30): number => {
-  if (value?.length) {
-    return parseInt(value, 10)
-  }
-  return fallback
-}
-
-const checkForBoolean = (value: string, fallback = false): boolean => {
-  if (value?.length) {
-    return value === 'true'
-  }
-  return fallback
 }
 
 const checkForPatternArray = (value: any): string[] => {
@@ -60,12 +45,6 @@ const checkForChecks = (value: any): TChecks[] => {
     )
 }
 
-const checkForFile = (input: string): string => {
-  if (fs.existsSync(input)) {
-    return fs.readFileSync(input, 'utf-8').toString()
-  }
-  return input
-}
 export const getConfig = (config: string): TConfig => {
   const initialConfig: TConfig = {
     disable: false,
@@ -75,7 +54,7 @@ export const getConfig = (config: string): TConfig => {
       artifactRetentionDays: 0
     }
   }
-  const _config = yml.load(checkForFile(config)) as Record<string, any>
+  const _config = checkForFileOrLoadYml(config)
   initialConfig.disable = checkForBoolean(_config.disable_check)
   initialConfig.comment = {
     disable: checkForBoolean(_config.comment.disble_pr_comment),
