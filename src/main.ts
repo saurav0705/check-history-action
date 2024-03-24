@@ -1,4 +1,11 @@
-import {getInput, setOutput, setFailed, info} from '@actions/core'
+import {
+  getInput,
+  setOutput,
+  setFailed,
+  info,
+  startGroup,
+  endGroup
+} from '@actions/core'
 import {context} from '@actions/github'
 
 import {getAllArtifactValues} from './values-from-variables'
@@ -36,6 +43,8 @@ async function run(): Promise<void> {
       sha: context.payload.pull_request?.head.sha ?? ''
     })
 
+    startGroup(`Initiating configs for github and input...`)
+
     info(`GITHUB CONFIG => ${JSON.stringify(github.CONFIG, null, 2)}`)
 
     if (UPLOAD_KEY) {
@@ -48,6 +57,11 @@ async function run(): Promise<void> {
     }
 
     const {disable, comment, checks} = getConfig(getInput('CONFIG'))
+    info(
+      `INPUT CONFIG => ${JSON.stringify({disable, comment, checks}, null, 2)}`
+    )
+
+    endGroup()
 
     // Get Input from action
     const {artifacts} = getArtifactInputs(checks)
@@ -66,6 +80,7 @@ async function run(): Promise<void> {
       return
     }
 
+    startGroup(`Fetch SHA and check for diff`)
     // Populate SHA in input
     const artifactsValueWithSha = await getAllArtifactValues(artifacts)
 
@@ -77,6 +92,8 @@ async function run(): Promise<void> {
     // Complete Response for action
     const artifactValueWithShaAndFileDiffWithShouldRunStatus =
       matchFileForResponse(artifactValueWithShaAndFileDiff)
+
+    endGroup()
 
     // post a message summary of action if not disabled
     await postCommentOnPrWithDetails(

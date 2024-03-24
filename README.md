@@ -17,47 +17,107 @@ Ensure that you have these dependencies installed or included in your workflow e
 
 ## Inputs
 
-```yaml
-# This is to check file
-      - name: Check Changed File
-        uses: saurav0705/check-history-action@v1
-        id: check-changed-file
-        with:
-          GIT_TOKEN: ${{secrets.GIT_SECRET}}
-          KEYS: |
-            - key: android-lint
-              pattern: android/**
-            - key: android-detekt
-              pattern: android/**
+You can provide input directly to the file or you can provide a config file
 
-# This will be consumed by the job
-      - name: Check Changed File
-        uses: saurav0705/check-history-action@v1
-        id: check-changed-file
-        with:
-          GIT_TOKEN: ${{secrets.GIT_SECRET}}
-          # if UPLOAD_KEYS is present KEYS will be ignored
-          UPLOAD_KEY: JOB_NAME_1
-          ARTIFACT_RETENTION_DAYS: '30' #default it is set to 30
+### DIRECT INPUT
+
+#### This is to check file
+
+```yaml
+- name: Check Changed File
+  uses: saurav0705/check-history-action@v1
+  id: check-changed-file
+  with:
+    GIT_TOKEN: ${{secrets.GIT_SECRET}}
+    CONFIG: |
+      disable: false // disables the check
+      comment:
+        disable: false // disables the PR comment
+        retentionDays: 30 // artifact which contains the PR comment info if not given is set to 30 days
+      checks:
+        - key: name
+          pattern:
+            - PATH_1
+            - PATH_2
+          disbale: false // disable individual check
+          disableInComment: false // does not post status in message
 ```
 
-### `GIT_TOKEN` (required)
+or
+
+```yaml
+# .github/config.yml
+disable: false // disables the check
+comment:
+  disable: false // disables the PR comment
+  retentionDays: 30 // artifact which contains the PR comment info if not given is set to 30 days
+checks:
+  - key: name
+    pattern:
+      - PATH_1
+      - PATH_2
+    disbale: false // disable individual check
+    disableInComment: false // does not post status in message
+
+# check.yml
+- name: Check Changed File
+  uses: saurav0705/check-history-action@v1
+  id: check-changed-file
+  with:
+    GIT_TOKEN: ${{secrets.GIT_SECRET}}
+    CONFIG: ./.github/config.yml
+```
+
+#### This is to Upload Artifact
+
+```yml
+# This will be consumed by the job
+- name: Check Changed File
+  uses: saurav0705/check-history-action@v1
+  id: check-changed-file
+  with:
+    GIT_TOKEN: ${{secrets.GIT_SECRET}}
+    UPLOAD_KEY: JOB_NAME
+    ARTIFACT_RETENTION_DAYS: '30' #default it is set to 30
+```
+
+### `GIT_TOKEN`
 
 The GitHub token used to authenticate API requests. You can use the `{{ secrets.GITHUB_TOKEN }}` token available in your workflow without any additional setup.
 
-### `KEYS` (required)
-This is the key in which we mention the workflow name and pattern that we want to match which are seperated by `,`.
+### `CONFIG` (required)
+
+## Explanation of Configuration
+
+### Disable Settings
+
+- **Disable**: `boolean`
+  - Description: This setting controls the overall disabling of the action.
+  - Value: `false` indicates that the feature is enabled and is default value.
+
+### Comment Settings
+
+- **Disable**: `false`
+  - Description: This sub-setting under `comment` controls the disabling of pr commenting functionality.
+  - Value: `false` indicates that commenting functionality is enabled which is default.
+- **Retention Days**: `30`
+  - Description: This sub-setting specifies the retention period for pr comment.
+  - Value: `30` indicates comments will be retained for 30 days which is bt default.
+
+### Checks
+
+- **Key**: `name`
+  - Description: This setting specifies a key which is identify against which check you are running the checks.
+- **Pattern**:
+  - Description: This setting defines the pattern against which checks will be applied.
+  - Value: `/file/pattern` represents the picomatch expression pattern used for matching.
 
 ### `UPLOAD_KEY` (required)
+
 This is required when you want to update the successful run of a job.
 
-### `DISABLE_CHECK` 
-This is used if you want to disable check then all the keys that are provided will have shouldRun as `true`.
+### `ARTIFACT_RETENTION_DAYS`
 
-### `DISABLE_PR_COMMENT` 
-This is used if you want to disable pr comment if this is truned as `true` this action will not post the comment.
-
-### `ARTIFACT_RETENTION_DAYS` 
 This is used to set artifact retention days while logging a successful run and will be consumed when `UPLOAD_KEYS` is given.
 
 ## Outputs
@@ -66,32 +126,36 @@ This Return a `status` object in which the following are present
 
 ```json
 {
-    "job_1" : {
-      "shouldRun" : true, // boolean
-      "key" : "job_1-{pr-number}", // string
-      "suppliedKey" : "job_1", // string
-      "filesRegex" : "regex", // string
-      "sha":"some-sha", // string
-      "diffFiles" : [ "file-1","file-2" ] // Array<string>
-    }
+  "job_1": {
+    "shouldRun": true, // boolean
+    "key": "job_1-{pr-number}", // string
+    "suppliedKey": "job_1", // string
+    "filesRegex": "regex", // string
+    "sha": "some-sha", // string
+    "diffFiles": ["file-1", "file-2"] // Array<string>
+  }
 }
 ```
 
 ### `shouldRun`
+
 It's a boolean which tell if these 2 commits have pattern matching file change.
 
 ### `key`
+
 It's a string which is the job key for which this is fetched appended with pr number.
 
 ### `filesRegex`
+
 It's a string which is the regex for file path match.
 
 ### `sha`
+
 sha for last successful run.
 
 ### `diffFiles`
-Array of files that has been changed between current and last successfull sha.
 
+Array of files that has been changed between current and last successfull sha.
 
 ## Usage
 
@@ -107,7 +171,7 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-      JOB_NAME : ${{steps.changed-files.outputs.JOB_NAME}} 
+      JOB_NAME : ${{steps.changed-files.outputs.JOB_NAME}}
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -115,18 +179,17 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '14'
+        node-version: '20'
 
     - name: Run Check Changed Files
       id: changed-files
       uses: saurav0705/check-history-action@v1
       with:
           GIT_TOKEN: ${{secrets.GIT_SECRET}}
-          KEYS: |
-            - key: android-lint
-              pattern: android/**
-            - key: android-detekt
-              pattern: android/**
+          CONFIG: |
+            - key: JOB_NAME
+              pattern:
+                - file/pattern/match
 
     - name: Print status
       run: echo "Action status: ${{ steps.regex_commenter.outputs.status }}"
@@ -153,9 +216,7 @@ jobs:
           GIT_TOKEN: ${{secrets.GIT_SECRET}}
           UPLOAD_KEY: JOB_NAME
           ARTIFACT_RETENTION_DAYS: '30'
-
 ```
-
 
 ## Support
 

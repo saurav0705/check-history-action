@@ -2,33 +2,39 @@ name: 'Check History Action'
 description: 'Compare commits with file Regex and shows status if it should run the check or not'
 author: 'saurav0705'
 inputs:
-  KEYS: 
-    required: false
-    description: 'Define key and regex pattern that needs to be fetched'
+  CONIFG:
+    required: true
+    description: |
+      // This is the config for the action it can take either file path or you can directly pass the config which follows the below structure
+      ./.github/config.yml 
+            OR
+      disable: false // disables the check
+      comment:
+        disable: false // disables the PR comment
+        retentionDays: 30 // artifact which contains the PR comment info if not given is set to 30 days
+      checks:
+        - key: name
+          pattern:
+            - PATH_1
+            - PATH_2
+          disbale: false // disable individual check
+          disableInComment: false // does not post status in message
     default: ''
   GIT_TOKEN:
-    required: true
+    required: false
     description: 'GITHUB TOKEN FOR THE REPO'
-    default: ''
+    default: ${{github.token}}
   UPLOAD_KEY:
     required: false
     description: This is required to publish the successful sha to repo varaible
-  DISABLE_PR_COMMENT:
-    default: 'false'
-    required: false
-    description: This is used to turn off the pr comment which is published by action
-  DISABLE_CHECK:
-    default: 'false'
-    required: false
-    description: This is used to turn off the action
   ARTIFACT_RETENTION_DAYS:
     default: '30'
     required: false
-    description: This is used to define artifact upload days 
+    description: This is used to define artifact upload days
 
 branding:
   icon: cloud-lightning
   color: blue
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'
