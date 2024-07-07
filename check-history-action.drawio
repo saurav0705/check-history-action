@@ -1,9 +1,55 @@
-<mxfile host="app.diagrams.net" modified="2024-07-07T09:50:40.341Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" version="24.6.4" etag="n7SY_IyNECGd3HG1CG_b" type="github">
+<mxfile host="app.diagrams.net" modified="2024-07-07T09:57:42.775Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36" etag="x-zqtaTU8ePr2__jwE0n" version="24.6.4" type="github">
   <diagram name="Page-1" id="OaYPCTQNpa4lAAGU-SxW">
-    <mxGraphModel>
+    <mxGraphModel dx="963" dy="886" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="9x5Ke7Ysy36Cq0Jr0qLp-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="9x5Ke7Ysy36Cq0Jr0qLp-2">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="390" y="478" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="9x5Ke7Ysy36Cq0Jr0qLp-2" value="" style="aspect=fixed;sketch=0;html=1;dashed=0;whitespace=wrap;verticalLabelPosition=bottom;verticalAlign=top;fillColor=#2875E2;strokeColor=#ffffff;points=[[0.005,0.63,0],[0.1,0.2,0],[0.9,0.2,0],[0.5,0,0],[0.995,0.63,0],[0.72,0.99,0],[0.5,1,0],[0.28,0.99,0]];shape=mxgraph.kubernetes.icon2;prIcon=job" vertex="1" parent="1">
+          <mxGeometry x="130" y="430" width="100" height="96" as="geometry" />
+        </mxCell>
+        <mxCell id="9x5Ke7Ysy36Cq0Jr0qLp-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="9x5Ke7Ysy36Cq0Jr0qLp-3" target="9x5Ke7Ysy36Cq0Jr0qLp-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="9x5Ke7Ysy36Cq0Jr0qLp-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="9x5Ke7Ysy36Cq0Jr0qLp-3" target="9x5Ke7Ysy36Cq0Jr0qLp-5">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="620" y="482" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="9x5Ke7Ysy36Cq0Jr0qLp-3" value="" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.action;fillColor=#5294CF;gradientColor=none;" vertex="1" parent="1">
+          <mxGeometry x="394" y="450" width="63" height="64.5" as="geometry" />
+        </mxCell>
+        <mxCell id="9x5Ke7Ysy36Cq0Jr0qLp-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.855;exitY=0.145;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="9x5Ke7Ysy36Cq0Jr0qLp-3" target="9x5Ke7Ysy36Cq0Jr0qLp-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="9x5Ke7Ysy36Cq0Jr0qLp-13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.855;exitY=0.855;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="9x5Ke7Ysy36Cq0Jr0qLp-3" target="9x5Ke7Ysy36Cq0Jr0qLp-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="9x5Ke7Ysy36Cq0Jr0qLp-14" value="Action is Triggered" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="115" y="540" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="9x5Ke7Ysy36Cq0Jr0qLp-1" value="Github Artifact Store" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;imageAspect=0;aspect=fixed;image=https://cdn3.iconfinder.com/data/icons/social-media-2034/500/github-128.png" vertex="1" parent="1">
+          <mxGeometry x="361.5" y="160" width="128" height="128" as="geometry" />
+        </mxCell>
+        <mxCell id="9x5Ke7Ysy36Cq0Jr0qLp-16" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;Check History Action&lt;/h1&gt;&lt;div&gt;&lt;div&gt;The&amp;nbsp; Action retrieves the last successful job&#39;s sha from github artifact store, compares it with the latest commit, identifies changed files, performs pattern matching against user-defined criteria, and decides job execution based on matched file patterns.&lt;/div&gt;&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="280" y="514.5" width="264.5" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="9x5Ke7Ysy36Cq0Jr0qLp-17" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="640" y="350" width="63" height="284.5" as="geometry" />
+        </mxCell>
+        <mxCell id="9x5Ke7Ysy36Cq0Jr0qLp-4" value="" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.action;fillColor=#5294CF;gradientColor=none;" vertex="1" parent="9x5Ke7Ysy36Cq0Jr0qLp-17">
+          <mxGeometry width="63" height="64.5" as="geometry" />
+        </mxCell>
+        <mxCell id="9x5Ke7Ysy36Cq0Jr0qLp-5" value="" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.action;fillColor=#5294CF;gradientColor=none;" vertex="1" parent="9x5Ke7Ysy36Cq0Jr0qLp-17">
+          <mxGeometry y="100" width="63" height="64.5" as="geometry" />
+        </mxCell>
+        <mxCell id="9x5Ke7Ysy36Cq0Jr0qLp-6" value="" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;shape=mxgraph.aws3.action;fillColor=#5294CF;gradientColor=none;" vertex="1" parent="9x5Ke7Ysy36Cq0Jr0qLp-17">
+          <mxGeometry y="220" width="63" height="64.5" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
