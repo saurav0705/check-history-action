@@ -94,7 +94,7 @@ const checkFlow = async (config: string) => {
 
 async function run(): Promise<void> {
   try {
-    const GIT_TOKEN = getInput('GIT_TOKEN')
+    const GIT_TOKEN = process.env.GITHUB_TOKEN ||getInput('GIT_TOKEN')
     const UPLOAD = getInput('UPLOAD')
     github.setClient(GIT_TOKEN)
     github.setConfig({

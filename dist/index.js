@@ -498,7 +498,7 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         var _a, _b, _c, _d, _e;
         try {
-            const GIT_TOKEN = (0, core_1.getInput)('GIT_TOKEN');
+            const GIT_TOKEN = process.env.GITHUB_TOKEN || (0, core_1.getInput)('GIT_TOKEN');
             const UPLOAD = (0, core_1.getInput)('UPLOAD');
             client_1.github.setClient(GIT_TOKEN);
             client_1.github.setConfig({

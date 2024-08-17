@@ -5,7 +5,7 @@ inputs:
   GIT_TOKEN:
     required: false
     description: 'GITHUB TOKEN FOR THE REPO'
-    default: ${{github.token}}
+    default: '${{github.token}}'
   UPLOAD:
     description: This is required to publish the successful sha to repo varaible
     required: false
