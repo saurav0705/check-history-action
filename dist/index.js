@@ -452,6 +452,7 @@ const client_1 = __nccwpck_require__(81495);
 const artifact_1 = __nccwpck_require__(37917);
 const get_config_1 = __nccwpck_require__(90191);
 const get_upload_config_1 = __nccwpck_require__(31650);
+const utils_1 = __nccwpck_require__(50918);
 const uploadFlow = (input) => __awaiter(void 0, void 0, void 0, function* () {
     (0, core_1.startGroup)(`Starting Upload Flow...`);
     (0, core_1.info)(`GITHUB CONFIG => ${JSON.stringify(client_1.github.CONFIG, null, 2)}`);
@@ -498,7 +499,7 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         var _a, _b, _c, _d, _e;
         try {
-            const GIT_TOKEN = process.env.GITHUB_TOKEN || (0, core_1.getInput)('GIT_TOKEN');
+            const GIT_TOKEN = (0, utils_1.getGitToken)((0, core_1.getInput)('GIT_TOKEN'));
             const UPLOAD = (0, core_1.getInput)('UPLOAD');
             client_1.github.setClient(GIT_TOKEN);
             client_1.github.setConfig({
@@ -653,7 +654,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.checkForFileOrLoadYml = exports.checkForBoolean = exports.checkForNumber = exports.extractFileFromZip = exports.arrayBufferToFile = exports.convertStringToFile = exports.convertFileToString = void 0;
+exports.getGitToken = exports.checkForFileOrLoadYml = exports.checkForBoolean = exports.checkForNumber = exports.extractFileFromZip = exports.arrayBufferToFile = exports.convertStringToFile = exports.convertFileToString = void 0;
 const fs_1 = __importDefault(__nccwpck_require__(57147));
 const adm_zip_1 = __importDefault(__nccwpck_require__(66761));
 const js_yaml_1 = __importDefault(__nccwpck_require__(21917));
@@ -721,6 +722,14 @@ const checkForFileOrLoadYml = (input) => {
     return js_yaml_1.default.load(checkForFile(input));
 };
 exports.checkForFileOrLoadYml = checkForFileOrLoadYml;
+const getGitToken = (token) => {
+    var _a;
+    if (token && (token === null || token === void 0 ? void 0 : token.length)) {
+        return token;
+    }
+    return (_a = process.env.GITHUB_TOKEN) !== null && _a !== void 0 ? _a : '';
+};
+exports.getGitToken = getGitToken;
 
 
 /***/ }),

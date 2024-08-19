@@ -80,3 +80,11 @@ export const checkForBoolean = (value: string, fallback = false): boolean => {
 export const checkForFileOrLoadYml = (input: string): Record<string, any> => {
   return yml.load(checkForFile(input)) as Record<string, any>
 }
+
+export const getGitToken = (token: string) => {
+  if (token && token?.length) {
+    return token
+  }
+
+  return process.env.GITHUB_TOKEN ?? ''
+}
